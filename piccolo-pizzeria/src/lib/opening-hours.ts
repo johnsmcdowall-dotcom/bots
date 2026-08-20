@@ -38,7 +38,7 @@ export function computeOpeningStatus(
     return {
       isOpen: false,
       reason: "manual_pause",
-      message: business.orderingPausedMessage || "Ordering is temporarily paused — please check back shortly.",
+      message: business.orderingPausedMessage || "Ordering paused right now. Check back shortly.",
     };
   }
 
@@ -51,7 +51,7 @@ export function computeOpeningStatus(
       return {
         isOpen: false,
         reason: "special_closure",
-        message: `Closed today (${special.label}).`,
+        message: `Closed today · ${special.label}`,
         nextOpenLabel: findNextOpen(weeklyHours, specialHours, now),
       };
     }
@@ -68,7 +68,7 @@ export function computeOpeningStatus(
     return {
       isOpen: false,
       reason: "closed_day",
-      message: `Closed today. ${findNextOpen(weeklyHours, specialHours, now)}`,
+      message: `Closed today · ${findNextOpen(weeklyHours, specialHours, now)}`,
       nextOpenLabel: findNextOpen(weeklyHours, specialHours, now),
       todayHours,
     };
@@ -82,7 +82,7 @@ export function computeOpeningStatus(
     return {
       isOpen: false,
       reason: "outside_hours",
-      message: `Closed — opens today at ${formatTime(todayHours.openTime)}.`,
+      message: `Closed · opens today at ${formatTime(todayHours.openTime)}`,
       nextOpenLabel: `Opens today at ${formatTime(todayHours.openTime)}`,
       todayHours,
     };
@@ -92,7 +92,7 @@ export function computeOpeningStatus(
     return {
       isOpen: false,
       reason: "outside_hours",
-      message: `Closed — ${findNextOpen(weeklyHours, specialHours, now)}`,
+      message: `Closed · ${findNextOpen(weeklyHours, specialHours, now)}`,
       nextOpenLabel: findNextOpen(weeklyHours, specialHours, now),
       todayHours,
     };
@@ -100,7 +100,7 @@ export function computeOpeningStatus(
 
   return {
     isOpen: true,
-    message: `Open now — orders taken until ${formatTime(todayHours.closeTime)}`,
+    message: `Open now · orders until ${formatTime(todayHours.closeTime)}`,
     todayHours,
   };
 }

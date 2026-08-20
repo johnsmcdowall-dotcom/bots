@@ -19,7 +19,7 @@ export function OrderTypeSelector({
         type="button"
         onClick={() => onChange("collection")}
         className={cn(
-          "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-colors",
+          "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-[background-color,border-color,transform] duration-150 active:enabled:scale-[0.98]",
           value === "collection" ? "border-fire-500 bg-fire-500/5" : "border-char-200 hover:bg-char-900/[0.02]"
         )}
       >
@@ -33,7 +33,7 @@ export function OrderTypeSelector({
         disabled={!deliveryEnabled}
         title={deliveryEnabled ? undefined : "Delivery isn't available right now"}
         className={cn(
-          "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-colors",
+          "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-[background-color,border-color,transform] duration-150 active:enabled:scale-[0.98]",
           value === "delivery" ? "border-fire-500 bg-fire-500/5" : "border-char-200 hover:bg-char-900/[0.02]",
           !deliveryEnabled && "cursor-not-allowed opacity-40"
         )}

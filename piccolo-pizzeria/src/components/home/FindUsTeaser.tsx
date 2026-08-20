@@ -2,16 +2,8 @@ import Link from "next/link";
 import { MapPin, Clock, Phone, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TricolorRule } from "@/components/brand/TricolorRule";
+import { DAY_LABELS_SHORT, formatHours } from "@/lib/format";
 import type { BusinessSettings, WeeklyHours } from "@/lib/types";
-
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function formatTime(hhmm: string) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "pm" : "am";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return m === 0 ? `${hour12}${period}` : `${hour12}:${String(m).padStart(2, "0")}${period}`;
-}
 
 export function FindUsTeaser({ business, weeklyHours }: { business: BusinessSettings; weeklyHours: WeeklyHours }) {
   const today = new Date().getDay();
@@ -57,12 +49,12 @@ export function FindUsTeaser({ business, weeklyHours }: { business: BusinessSett
             <Clock className="h-4 w-4" /> Opening Hours
           </p>
           <ul className="space-y-2 text-sm">
-            {DAY_LABELS.map((label, idx) => {
+            {DAY_LABELS_SHORT.map((label, idx) => {
               const hours = weeklyHours[idx];
               return (
                 <li key={label} className={`flex justify-between border-b border-cream-100/10 pb-2 ${idx === today ? "font-semibold text-cream-50" : "text-cream-100/75"}`}>
                   <span>{label}</span>
-                  <span>{hours?.isOpen ? `${formatTime(hours.openTime)} – ${formatTime(hours.closeTime)}` : "Closed"}</span>
+                  <span>{hours?.isOpen ? `${formatHours(hours.openTime)} – ${formatHours(hours.closeTime)}` : "Closed"}</span>
                 </li>
               );
             })}

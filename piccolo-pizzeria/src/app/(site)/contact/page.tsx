@@ -3,20 +3,12 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InstagramIcon, FacebookIcon } from "@/components/icons/SocialIcons";
 import { getBusinessSettings, getWeeklyHours } from "@/lib/data/business";
+import { DAY_LABELS_FULL, formatHours } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Find Us",
   description: "Find Piccolo Pizzeria, get directions, opening hours and contact details.",
 };
-
-const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-function formatTime(hhmm: string) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "pm" : "am";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return m === 0 ? `${hour12}${period}` : `${hour12}:${String(m).padStart(2, "0")}${period}`;
-}
 
 export default async function ContactPage() {
   const [business, weeklyHours] = await Promise.all([getBusinessSettings(), getWeeklyHours()]);
@@ -28,7 +20,7 @@ export default async function ContactPage() {
       <p className="text-xs font-semibold uppercase tracking-widest text-fire-600">Find Us</p>
       <h1 className="mt-2 font-display text-5xl uppercase tracking-tight text-char-900 sm:text-6xl">Get in Touch</h1>
       <p className="mt-3 max-w-xl text-char-500">
-        Our regular pitch is the car park at Elm Tree Social Club — order ahead for collection, or
+        Our regular pitch is the car park at Elm Tree Social Club. Order ahead for collection, or
         follow us on Instagram for one-off pitches elsewhere.
       </p>
 
@@ -105,7 +97,7 @@ export default async function ContactPage() {
               <Clock className="h-5 w-5 text-fire-500" /> Opening Hours
             </h2>
             <ul className="mt-4 space-y-2 text-sm">
-              {DAY_LABELS.map((label, idx) => {
+              {DAY_LABELS_FULL.map((label, idx) => {
                 const hours = weeklyHours[idx];
                 return (
                   <li
@@ -113,7 +105,7 @@ export default async function ContactPage() {
                     className={`flex justify-between border-b border-char-100 pb-2 ${idx === today ? "font-semibold text-char-900" : "text-char-600"}`}
                   >
                     <span>{label}</span>
-                    <span>{hours?.isOpen ? `${formatTime(hours.openTime)} – ${formatTime(hours.closeTime)}` : "Closed"}</span>
+                    <span>{hours?.isOpen ? `${formatHours(hours.openTime)} – ${formatHours(hours.closeTime)}` : "Closed"}</span>
                   </li>
                 );
               })}
@@ -123,9 +115,9 @@ export default async function ContactPage() {
           <div className="rounded-2xl bg-char-900 p-5 text-cream-100">
             <h2 className="font-display text-lg text-cream-50">Weddings, Corporate &amp; Festivals</h2>
             <p className="mt-2 text-sm leading-relaxed text-cream-100/75">
-              We take the oven on the road for private and corporate bookings of any size —
-              weddings, corporate events, festivals, we&apos;ve done them all. Get in touch by
-              phone or email above and we&apos;ll sort the details.
+              We take the oven out for private and corporate bookings of any size. Weddings,
+              corporate events, festivals: we&apos;ve covered them all. Get in touch by phone or
+              email above and we&apos;ll sort the details.
             </p>
           </div>
         </div>

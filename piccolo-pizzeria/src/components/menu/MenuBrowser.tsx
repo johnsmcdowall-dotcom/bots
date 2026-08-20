@@ -44,7 +44,7 @@ export function MenuBrowser({
     <>
       <CategoryNav categories={categories} />
 
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[90rem] px-4 py-10 sm:px-6 lg:px-8">
         {categories.map((category) => {
           const items = products
             .filter((p) => p.categoryId === category.id)
@@ -57,7 +57,7 @@ export function MenuBrowser({
               <TricolorRule className="mt-2 h-[3px] w-10" />
               {category.description && <p className="mt-2 text-char-500">{category.description}</p>}
 
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                 {items.map((product) => (
                   <button
                     key={product.id}

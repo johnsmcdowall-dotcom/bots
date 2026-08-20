@@ -32,13 +32,10 @@ export function StickyBasketBar() {
         )}
       >
         <span className="flex items-center gap-2.5 font-semibold">
-          <span className="relative">
-            <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-fire-500 text-[10px] font-bold">
-              {itemCount}
-            </span>
+          <ShoppingBag className="h-5 w-5" />
+          <span>
+            View Basket <span className="text-cream-100/60">·</span> {itemCount} {itemCount === 1 ? "item" : "items"}
           </span>
-          View Basket
         </span>
         <span className="font-display text-lg">{formatMoney(subtotal)}</span>
       </Link>

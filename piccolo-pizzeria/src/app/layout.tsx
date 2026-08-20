@@ -20,13 +20,14 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Piccolo Pizzeria — Wood-Fired Pizza, North East England",
+    default: "Piccolo Pizzeria — Woodfired Pizza, North East England",
     template: "%s — Piccolo Pizzeria",
   },
   description:
-    "Proper wood-fired pizza, hand-stretched daily. Independent pizza trailer on Teesside serving Stockton-on-Tees, Middlesbrough and beyond. Order online for collection.",
+    "Independent pizza trailer on Teesside. Woodfired pizza, made to order, serving Stockton-on-Tees, Middlesbrough and beyond. Order online for collection.",
   keywords: [
     "wood-fired pizza",
+    "woodfired pizza",
     "pizza Stockton-on-Tees",
     "pizza Teesside",
     "pizza Middlesbrough",
@@ -37,15 +38,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Piccolo Pizzeria",
-    title: "Piccolo Pizzeria — Wood-Fired Pizza, North East England",
-    description: "Proper wood-fired pizza, hand-stretched daily. Order online for collection.",
+    title: "Piccolo Pizzeria — Woodfired Pizza, North East England",
+    description: "Independent pizza trailer on Teesside. Order online for collection.",
     url: SITE_URL,
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
     title: "Piccolo Pizzeria",
-    description: "Proper wood-fired pizza, hand-stretched daily.",
+    description: "Independent pizza trailer on Teesside. Order online for collection.",
   },
   icons: {
     icon: "/icon.svg",

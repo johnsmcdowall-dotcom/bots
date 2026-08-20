@@ -31,7 +31,7 @@ export function BasketItem({ line }: { line: CartLine }) {
             <button
               type="button"
               onClick={() => updateQuantity(line.lineId, line.quantity - 1)}
-              className="flex h-8 w-8 items-center justify-center text-char-700"
+              className="flex h-11 w-11 items-center justify-center text-char-700 transition-transform active:scale-90"
               aria-label="Decrease quantity"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -40,7 +40,7 @@ export function BasketItem({ line }: { line: CartLine }) {
             <button
               type="button"
               onClick={() => updateQuantity(line.lineId, line.quantity + 1)}
-              className="flex h-8 w-8 items-center justify-center text-char-700"
+              className="flex h-11 w-11 items-center justify-center text-char-700 transition-transform active:scale-90"
               aria-label="Increase quantity"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -49,7 +49,7 @@ export function BasketItem({ line }: { line: CartLine }) {
           <button
             type="button"
             onClick={() => removeLine(line.lineId)}
-            className="flex items-center gap-1 text-xs font-semibold text-char-400 hover:text-fire-600"
+            className="flex min-h-11 items-center gap-1 text-xs font-semibold text-char-400 hover:text-fire-600"
           >
             <X className="h-3.5 w-3.5" /> Remove
           </button>

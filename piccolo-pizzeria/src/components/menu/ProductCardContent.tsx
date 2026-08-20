@@ -14,9 +14,9 @@ const DIETARY_ICON = {
 
 export function ProductCardContent({ product, className }: { product: Product; className?: string }) {
   return (
-    <div className={cn("group flex h-full flex-col overflow-hidden rounded-2xl bg-cream-50 shadow-sm ring-1 ring-char-200/60 transition-all", "hover:-translate-y-0.5 hover:shadow-lg", className)}>
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-char-800">
-        <ProductImage imageUrl={product.imageUrl} alt={product.name} className="transition-transform duration-500 group-hover:scale-[1.04]" />
+    <div className={cn("group flex h-full flex-col overflow-hidden rounded-2xl bg-cream-50 shadow-sm ring-1 ring-char-200/60 transition-[transform,box-shadow] duration-200", "hover:-translate-y-0.5 hover:shadow-lg", className)}>
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-char-900">
+        <ProductImage imageUrl={product.imageUrl} alt={product.name} className="transition-transform duration-500 ease-out group-hover:scale-[1.05]" />
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {product.isNew && <Badge variant="fire">New</Badge>}
           {product.featured && !product.isNew && <Badge variant="ember">Featured</Badge>}
@@ -29,12 +29,12 @@ export function ProductCardContent({ product, className }: { product: Product; c
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-char-900">{product.name}</h3>
-          <span className="shrink-0 font-display text-lg text-fire-600">{formatMoney(product.priceMinor)}</span>
+      <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="font-display text-xl uppercase leading-tight tracking-tight text-char-900 sm:text-2xl">{product.name}</h3>
+          <span className="shrink-0 font-display text-xl text-fire-600 sm:text-2xl">{formatMoney(product.priceMinor)}</span>
         </div>
-        {product.description && <p className="line-clamp-2 text-sm leading-snug text-char-500">{product.description}</p>}
+        {product.description && <p className="line-clamp-2 text-sm leading-relaxed text-char-500">{product.description}</p>}
         {product.dietary.length > 0 && (
           <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-2 text-char-400">
             {product.dietary.map((tag) => {

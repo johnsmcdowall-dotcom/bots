@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Piccolo Pizzeria",
     short_name: "Piccolo",
-    description: "Wood-fired pizza, hand-stretched daily. Order online for collection.",
+    description: "Independent woodfired pizza trailer on Teesside. Order online for collection.",
     start_url: "/",
     display: "standalone",
     background_color: "#faf5ea",

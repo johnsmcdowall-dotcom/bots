@@ -47,7 +47,7 @@ export function CategoryNav({ categories }: { categories: Category[] }) {
     <div className="sticky top-16 z-20 border-b border-char-200/70 bg-cream-100/95 backdrop-blur-md sm:top-20">
       <div
         ref={navRef}
-        className="no-scrollbar mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8"
+        className="no-scrollbar mx-auto flex max-w-[90rem] gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8"
       >
         {categories.map((cat) => (
           <button
@@ -55,7 +55,7 @@ export function CategoryNav({ categories }: { categories: Category[] }) {
             data-slug={cat.slug}
             onClick={() => scrollTo(cat.slug)}
             className={cn(
-              "shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+              "shrink-0 rounded-full px-4 py-3 text-sm font-semibold transition-[background-color,color,transform] duration-150 active:scale-95",
               active === cat.slug ? "bg-char-900 text-cream-50" : "bg-char-900/[0.05] text-char-600 hover:bg-char-900/10"
             )}
           >

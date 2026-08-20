@@ -27,16 +27,16 @@ export default async function PrivacyPage() {
           <h2 className="font-display text-xl text-char-900">2. Information we collect</h2>
           <p className="mt-2">
             When you place an order we collect your name, phone number, email address and, for
-            delivery orders, your delivery address. We do not collect or store your card details —
-            payments are processed securely by Stripe.
+            delivery orders, your delivery address. We do not collect or store your card details.
+            Payments are processed securely by Stripe.
           </p>
         </section>
         <section>
           <h2 className="font-display text-xl text-char-900">3. How we use it</h2>
           <p className="mt-2">
-            We use your details to fulfil your order, contact you about it, and — if you agree —
-            let you know about offers and updates. We keep order records for accounting and food
-            safety purposes as required by law.
+            We use your details to fulfil your order, contact you about it, and, if you agree, let
+            you know about offers and updates. We keep order records for accounting and food safety
+            purposes as required by law.
           </p>
         </section>
         <section>

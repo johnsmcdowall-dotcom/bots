@@ -102,7 +102,7 @@ export function CheckoutFlow() {
       }
       setResult(data);
     } catch {
-      setError("Network error — please check your connection and try again.");
+      setError("Network error. Check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
@@ -125,7 +125,7 @@ export function CheckoutFlow() {
           ) : (
             <div>
               <p className="mb-4 text-sm font-semibold text-char-700">
-                Order #{result.orderNumber} — complete payment to confirm
+                Order #{result.orderNumber} · complete payment to confirm
               </p>
               {result.clientSecret && (
                 <PaymentSection clientSecret={result.clientSecret} orderId={result.orderId} totalMinor={result.totalMinor} />

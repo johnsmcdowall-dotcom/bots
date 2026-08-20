@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800"><defs><linearGradient id="rg9" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b73a2a"/><stop offset="100%" stop-color="#0b0b0b"/></linearGradient><filter id="rgn9"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.045 0"/></filter></defs>
-    <rect width="800" height="800" fill="url(#rg9)"/>
-    <rect width="800" height="800" filter="url(#rgn9)"/>
-    <path d="M310 220 h180 l-24 380 a20 20 0 0 1 -20 18 h-92 a20 20 0 0 1 -20 -18 Z" fill="none" stroke="#faf5ea" stroke-width="3" opacity="0.45"/>
-    <line x1="292" y1="420" x2="510" y2="420" stroke="#faf5ea" stroke-width="2" opacity="0.3"/>
-    <circle cx="449.2" cy="302.5" r="9.8" fill="#faf5ea" opacity="0.35"/><circle cx="431.3" cy="466.7" r="5.8" fill="#faf5ea" opacity="0.35"/><circle cx="458.7" cy="299.3" r="8.4" fill="#faf5ea" opacity="0.35"/><circle cx="427.7" cy="436.2" r="6.0" fill="#faf5ea" opacity="0.35"/><circle cx="461.3" cy="346.1" r="9.1" fill="#faf5ea" opacity="0.35"/><circle cx="419.9" cy="370.1" r="7.7" fill="#faf5ea" opacity="0.35"/><circle cx="455.6" cy="519.7" r="7.2" fill="#faf5ea" opacity="0.35"/><circle cx="452.3" cy="316.9" r="8.7" fill="#faf5ea" opacity="0.35"/><circle cx="376.7" cy="274.4" r="10.1" fill="#faf5ea" opacity="0.35"/><circle cx="358.6" cy="417.9" r="7.5" fill="#faf5ea" opacity="0.35"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800"><rect width="800" height="800" fill="#0b0b0b"/><defs>
+      <radialGradient id="vg8" cx="50%" cy="42%" r="75%">
+        <stop offset="0%" stop-color="#1a1815"/>
+        <stop offset="100%" stop-color="#0b0b0b"/>
+      </radialGradient>
+      <filter id="gr8"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.035 0"/></filter>
+    </defs><rect width="800" height="800" fill="url(#vg8)"/><rect width="800" height="800" filter="url(#gr8)"/><circle cx="400" cy="400" r="260" fill="none" stroke="#f2e6cf" stroke-width="2.5" opacity="0.22"  /><circle cx="400" cy="400" r="230" fill="none" stroke="#f2e6cf" stroke-width="2.5" opacity="0.32" stroke-dasharray="2 16" />
+    <g transform="translate(400 406) rotate(0) scale(1.55)" stroke="#f2e6cf" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.55">
+      <path d="M-68 36 v-12 a68 68 0 0 1 136 0 v12" />
+      <path d="M-68 36 h136" />
+      <rect x="-18" y="-64" width="36" height="18" rx="4" />
+      <path d="M-16 36c0-12 8-16 8-26 0-6-2-10-6-14 10 2 18 12 18 24 0 6-2 10-6 14 6-2 10-8 10-16 8 6 12 14 12 22 0 14-10 24-26 24s-18-10-18-24c0-4 2-6 4-10 0 6 0 6 4 6"
+        fill="#f2e6cf" stroke-width="4" opacity="0.5225" />
+    </g></svg>

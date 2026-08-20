@@ -42,14 +42,14 @@ export function Hero({
         <h1 className="max-w-2xl text-balance font-display text-6xl uppercase leading-[0.95] tracking-tight text-cream-50 sm:text-7xl lg:text-8xl animate-fade-up">
           Proper
           <br />
-          Wood-Fired
+          Woodfired
           <br />
           <span className="text-fire-400">Pizza.</span>
         </h1>
 
         <p className="mt-6 max-w-md text-balance text-lg leading-relaxed text-cream-100/80 animate-fade-up [animation-delay:100ms]">
-          Our own wood-fired oven, hand-stretched dough and a menu that doesn&apos;t cut corners.
-          Order ahead and collect straight from the trailer — no queuing required.
+          One oven, hand stretched dough, no shortcuts. Order ahead and collect
+          straight from the trailer, no queuing.
         </p>
 
         <div className="mt-9 flex flex-col gap-3 sm:flex-row animate-fade-up [animation-delay:200ms]">

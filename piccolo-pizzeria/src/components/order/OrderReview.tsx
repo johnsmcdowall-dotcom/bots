@@ -66,7 +66,7 @@ export function OrderReview({
       {business.orderingPaused && (
         <div className="mt-6 flex items-start gap-3 rounded-2xl bg-fire-500/10 p-4 text-sm text-fire-700">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>{business.orderingPausedMessage || "Ordering is temporarily paused — please check back shortly."}</p>
+          <p>{business.orderingPausedMessage || "Ordering paused right now. Check back shortly."}</p>
         </div>
       )}
 
@@ -90,7 +90,7 @@ export function OrderReview({
         <h2 className="font-display text-xl text-char-900">When?</h2>
         {asapBlocked && (
           <p className="mt-2 flex items-center gap-1.5 text-sm text-fire-600">
-            <AlertTriangle className="h-3.5 w-3.5" /> We&apos;re closed right now — choose a time below{business.scheduledOrdersEnabled ? "" : " or check back later"}.
+            <AlertTriangle className="h-3.5 w-3.5" /> We&apos;re closed right now. Choose a time below{business.scheduledOrdersEnabled ? "" : " or check back later"}.
           </p>
         )}
         <div className="mt-3">

@@ -39,12 +39,12 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           <p className="mt-2 text-char-500">This usually takes a few seconds. This page will update automatically.</p>
         </div>
       ) : (
-        <div className="text-center">
+        <div className="text-center animate-fade-up">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-basil-500/15">
             <PartyPopper className="h-6 w-6 text-basil-600" />
           </div>
-          <h1 className="mt-5 text-balance font-display text-2xl text-char-900 sm:text-3xl">
-            Thanks {order.customer.firstName} — we&apos;ve got your order
+          <h1 className="mt-5 text-balance font-display text-3xl uppercase tracking-tight text-char-900 sm:text-4xl">
+            You&apos;re In, {order.customer.firstName}.
           </h1>
           <p className="mt-2 text-char-500">Order #{order.orderNumber}</p>
         </div>

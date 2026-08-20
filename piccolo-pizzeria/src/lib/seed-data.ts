@@ -23,7 +23,7 @@ import type {
 
 export const seedBusinessSettings: BusinessSettings = {
   name: "Piccolo Pizzeria",
-  tagline: "Wood-fired. Hand-stretched. Piccolo.",
+  tagline: "Woodfired. Hand stretched. Piccolo.",
   phone: "01642 000 000",
   email: "hello@piccolopizzeria.co.uk",
   addressLine1: "Elm Tree Social Club",
@@ -69,9 +69,9 @@ export const seedSpecialHours: SpecialHours[] = [
 ];
 
 export const seedCategories: Category[] = [
-  { id: "cat-pizzas", slug: "pizzas", name: "Pizzas", description: "Wood-fired in our trailer oven, made to order", sortOrder: 0 },
-  { id: "cat-specials", slug: "specials", name: "Pizza Specials", description: "Rotating specials — while they last", sortOrder: 1 },
-  { id: "cat-sandwiches", slug: "pizza-sandwiches", name: "Pizza Sandwiches", description: "Our dough, folded, filled with cheese and baked in the wood oven", sortOrder: 2 },
+  { id: "cat-pizzas", slug: "pizzas", name: "Pizzas", description: "Straight from the trailer oven, made to order", sortOrder: 0 },
+  { id: "cat-specials", slug: "specials", name: "Pizza Specials", description: "Rotating specials, while they last", sortOrder: 1 },
+  { id: "cat-sandwiches", slug: "pizza-sandwiches", name: "Pizza Sandwiches", description: "Our dough, folded and filled, baked in the wood oven", sortOrder: 2 },
   { id: "cat-dips", slug: "dips", name: "Dips", description: "", sortOrder: 3 },
   { id: "cat-drinks", slug: "drinks", name: "Drinks", description: "", sortOrder: 4 },
 ];
@@ -84,7 +84,7 @@ export const seedModifierGroups: ModifierGroup[] = [
     minSelect: 1,
     maxSelect: 1,
     options: [
-      { id: "mo-base-classic", name: "Classic Wood-Fired Base", priceMinor: 0, isDefault: true },
+      { id: "mo-base-classic", name: "Classic Woodfired Base", priceMinor: 0, isDefault: true },
       { id: "mo-base-gf", name: "Gluten Free Base", priceMinor: 250 },
     ],
   },
@@ -269,7 +269,7 @@ export const seedProducts: Product[] = [
     categoryId: "cat-pizzas",
     slug: "bbq-pulled-pork",
     name: "BBQ Pulled Pork",
-    description: "Red onion, BBQ pulled pork & a drizzle of bbq sauce.",
+    description: "Red onion, BBQ pulled pork & a drizzle of BBQ sauce.",
     priceMinor: 1200,
     imageUrl: "placeholder:pizzas:0",
     dietary: [],
@@ -305,7 +305,7 @@ export const seedProducts: Product[] = [
     categoryId: "cat-specials",
     slug: "this-weeks-special",
     name: "This Week's Special",
-    description: "A rotating special straight from the wood oven — ask us what's on today.",
+    description: "A rotating special straight from the wood oven. Ask us what's on today.",
     priceMinor: 1200,
     imageUrl: "/images/real/pizza-special-1.jpg",
     dietary: [],

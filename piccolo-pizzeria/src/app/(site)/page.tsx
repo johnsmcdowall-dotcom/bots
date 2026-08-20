@@ -1,5 +1,6 @@
 import { Hero } from "@/components/home/Hero";
 import { FeaturedMenu } from "@/components/home/FeaturedMenu";
+import { FoodMoment } from "@/components/home/FoodMoment";
 import { StoryTeaser } from "@/components/home/StoryTeaser";
 import { FindUsTeaser } from "@/components/home/FindUsTeaser";
 import { InstagramGallery } from "@/components/home/InstagramGallery";
@@ -22,6 +23,7 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero business={business} weeklyHours={weeklyHours} specialHours={specialHours} />
       <FeaturedMenu products={products} />
+      <FoodMoment />
       <StoryTeaser />
       <FindUsTeaser business={business} weeklyHours={weeklyHours} />
       <InstagramGallery business={business} />

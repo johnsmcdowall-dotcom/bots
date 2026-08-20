@@ -17,14 +17,14 @@ export default async function TermsPage() {
           <p className="mt-2">
             By placing an order through this website you agree to pay the total shown at checkout.
             Prices include VAT where applicable. We reserve the right to refuse or cancel an order,
-            for example if an item becomes unavailable after ordering — in that case we&apos;ll
+            for example if an item becomes unavailable after ordering. In that case we&apos;ll
             refund you in full.
           </p>
         </section>
         <section>
           <h2 className="font-display text-xl text-char-900">2. Collection &amp; delivery times</h2>
           <p className="mt-2">
-            Estimated collection and delivery times are just that — estimates. Times can vary with
+            Estimated collection and delivery times are just that: estimates. Times can vary with
             demand and traffic. We&apos;ll always try to have your order ready close to the time
             shown.
           </p>
@@ -40,7 +40,7 @@ export default async function TermsPage() {
           <h2 className="font-display text-xl text-char-900">4. Cancellations &amp; refunds</h2>
           <p className="mt-2">
             If you need to cancel or change an order, please call us on {business.phone} as soon
-            as possible — once your order has entered the oven we may not be able to change it.
+            as possible. Once your order has entered the oven we may not be able to change it.
           </p>
         </section>
         <section>

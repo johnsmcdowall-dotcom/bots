@@ -17,7 +17,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
       </div>
       <h1 className="mt-6 font-display text-4xl uppercase tracking-tight text-char-900">Something Went Wrong</h1>
       <p className="mt-2 text-char-500">
-        Sorry about that — an unexpected error occurred. Please try again, or head back to the
+        Sorry about that. Something went wrong on our end. Please try again, or head back to the
         menu.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">

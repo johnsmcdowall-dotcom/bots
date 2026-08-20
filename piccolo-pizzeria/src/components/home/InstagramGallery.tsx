@@ -3,12 +3,12 @@ import { InstagramIcon } from "@/components/icons/SocialIcons";
 import type { BusinessSettings } from "@/lib/types";
 
 const TILES = [
-  "/images/real/pizza-vegetarian.jpg",
-  "/images/real/oven-flame-2.jpg",
-  "/images/real/pizza-special-2.jpg",
-  "/images/real/trailer-interior.jpg",
-  "/images/real/pizza-special-4.jpg",
-  "/images/real/oven-flame-1.jpg",
+  { src: "/images/real/pizza-vegetarian.jpg", alt: "Vegetarian pizza fresh from the oven" },
+  { src: "/images/real/oven-flame-2.jpg", alt: "The oven at full heat" },
+  { src: "/images/real/pizza-special-2.jpg", alt: "This week's special" },
+  { src: "/images/real/trailer-interior.jpg", alt: "Inside the Piccolo trailer" },
+  { src: "/images/real/pizza-special-4.jpg", alt: "Fresh out of the oven" },
+  { src: "/images/real/oven-flame-1.jpg", alt: "Woodfired flame" },
 ];
 
 export function InstagramGallery({ business }: { business: BusinessSettings }) {
@@ -29,15 +29,22 @@ export function InstagramGallery({ business }: { business: BusinessSettings }) {
         </a>
       </div>
       <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-6">
-        {TILES.map((src, i) => (
+        {TILES.map((tile, i) => (
           <a
             key={i}
             href={business.instagramUrl}
             target="_blank"
             rel="noreferrer"
-            className="relative aspect-square overflow-hidden rounded-xl bg-char-800 transition-opacity hover:opacity-90"
+            className="group relative aspect-square overflow-hidden rounded-xl bg-char-800"
           >
-            <Image src={src} alt="" fill className="object-cover" />
+            <Image
+              src={tile.src}
+              alt={tile.alt}
+              fill
+              sizes="(min-width: 768px) 16vw, 33vw"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+            />
+            <div className="absolute inset-0 bg-char-900/0 transition-colors duration-200 group-hover:bg-char-900/10" />
           </a>
         ))}
       </div>
