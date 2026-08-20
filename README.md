@@ -1,5 +1,12 @@
 # bots
 
+## Piccolo Pizzeria
+
+A production-quality website and online ordering platform for Piccolo
+Pizzeria, an independent wood-fired pizza trailer. Lives in
+[`piccolo-pizzeria/`](piccolo-pizzeria/) — see
+[`piccolo-pizzeria/README.md`](piccolo-pizzeria/README.md) for setup.
+
 ## DeepSeek harness
 
 A minimal agentic chat harness for the DeepSeek API (OpenAI-compatible). It

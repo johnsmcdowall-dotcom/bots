@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" width="1200" height="1500"><defs>
+      <linearGradient id="stg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f2e6cf"/>
+        <stop offset="100%" stop-color="#c99a3f"/>
+      </linearGradient>
+      <filter id="stgn"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/></filter>
+    </defs>
+    <rect width="1200" height="1500" fill="url(#stg)"/>
+    <rect width="1200" height="1500" filter="url(#stgn)"/>
+    <g stroke="#151412" stroke-width="4" fill="none" opacity="0.4" stroke-linecap="round">
+      <path d="M600 1200 C560 950 640 750 600 500"/>
+      <ellipse cx="540" cy="1050" rx="42" ry="20" transform="rotate(-30 540 1050)"/>
+      <ellipse cx="660" cy="950" rx="42" ry="20" transform="rotate(30 660 950)"/>
+      <ellipse cx="540" cy="820" rx="42" ry="20" transform="rotate(-30 540 820)"/>
+      <ellipse cx="660" cy="700" rx="42" ry="20" transform="rotate(30 660 700)"/>
+    </g></svg>
