@@ -50,6 +50,29 @@ export function BusinessSettingsEditor({ business }: { business: BusinessSetting
         )}
       </section>
 
+      <section className="rounded-2xl border border-basil-500/30 bg-basil-500/5 p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg text-char-900">Tonight at Piccolo</h2>
+            <p className="text-sm text-char-500">A banner shown storefront-wide — a tonight-only special, an event, anything worth flagging.</p>
+          </div>
+          <Switch checked={form.announcementActive} onCheckedChange={(v) => set("announcementActive", v)} />
+        </div>
+        {form.announcementActive && (
+          <div className="mt-4">
+            <Label htmlFor="announcementMessage">Message shown to customers</Label>
+            <Textarea
+              id="announcementMessage"
+              className="mt-1.5"
+              rows={2}
+              placeholder="E.g. Live music from 6pm — come early for a table."
+              value={form.announcementMessage ?? ""}
+              onChange={(e) => set("announcementMessage", e.target.value)}
+            />
+          </div>
+        )}
+      </section>
+
       <section>
         <h2 className="font-display text-lg text-char-900">Order Timing</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">

@@ -25,6 +25,8 @@ export async function updateBusinessSettingsAction(input: Partial<BusinessSettin
   if (input.tiktokUrl !== undefined) patch.tiktok_url = input.tiktokUrl || null;
   if (input.orderingPaused !== undefined) patch.ordering_paused = input.orderingPaused;
   if (input.orderingPausedMessage !== undefined) patch.ordering_paused_message = input.orderingPausedMessage || null;
+  if (input.announcementActive !== undefined) patch.announcement_active = input.announcementActive;
+  if (input.announcementMessage !== undefined) patch.announcement_message = input.announcementMessage || null;
   if (input.asapOrdersEnabled !== undefined) patch.asap_orders_enabled = input.asapOrdersEnabled;
   if (input.scheduledOrdersEnabled !== undefined) patch.scheduled_orders_enabled = input.scheduledOrdersEnabled;
   if (input.deliveryEnabled !== undefined) patch.delivery_enabled = input.deliveryEnabled;

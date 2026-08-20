@@ -40,6 +40,8 @@ export async function getBusinessSettings(): Promise<BusinessSettings> {
       tiktokUrl: row.tiktok_url ?? undefined,
       orderingPaused: row.ordering_paused,
       orderingPausedMessage: row.ordering_paused_message ?? undefined,
+      announcementActive: row.announcement_active,
+      announcementMessage: row.announcement_message ?? undefined,
       asapOrdersEnabled: row.asap_orders_enabled,
       scheduledOrdersEnabled: row.scheduled_orders_enabled,
       deliveryEnabled: row.delivery_enabled,

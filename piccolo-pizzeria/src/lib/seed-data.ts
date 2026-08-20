@@ -37,6 +37,8 @@ export const seedBusinessSettings: BusinessSettings = {
   facebookUrl: "https://facebook.com/piccolopizzeria",
   orderingPaused: false,
   orderingPausedMessage: "",
+  announcementActive: true,
+  announcementMessage: "Fresh dough, fired to order — see you tonight.",
   asapOrdersEnabled: true,
   scheduledOrdersEnabled: true,
   deliveryEnabled: false,

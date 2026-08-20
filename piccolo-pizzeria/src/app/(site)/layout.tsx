@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/Header";
+import { TonightAnnouncement } from "@/components/layout/TonightAnnouncement";
 import { Footer } from "@/components/layout/Footer";
 import { StickyBasketBar } from "@/components/basket/StickyBasketBar";
 import { ScrollToTopOnNavigate } from "@/components/layout/ScrollToTopOnNavigate";
@@ -21,6 +22,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         Skip to content
       </a>
       <Header business={business} weeklyHours={weeklyHours} specialHours={specialHours} />
+      <TonightAnnouncement business={business} />
       <main id="main-content" className="flex-1 pb-24 md:pb-0">
         {children}
       </main>

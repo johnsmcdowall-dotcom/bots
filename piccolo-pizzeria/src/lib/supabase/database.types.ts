@@ -34,6 +34,8 @@ export interface BusinessSettingsRow {
   tiktok_url: string | null;
   ordering_paused: boolean;
   ordering_paused_message: string | null;
+  announcement_active: boolean;
+  announcement_message: string | null;
   asap_orders_enabled: boolean;
   scheduled_orders_enabled: boolean;
   delivery_enabled: boolean;

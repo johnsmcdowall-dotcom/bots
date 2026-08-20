@@ -116,6 +116,8 @@ export interface BusinessSettings {
   tiktokUrl?: string;
   orderingPaused: boolean;
   orderingPausedMessage?: string;
+  announcementActive: boolean;
+  announcementMessage?: string;
   asapOrdersEnabled: boolean;
   scheduledOrdersEnabled: boolean;
   deliveryEnabled: boolean;
