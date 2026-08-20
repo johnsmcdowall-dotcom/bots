@@ -2,18 +2,68 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { Elements, ExpressCheckoutElement, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { AlertCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getStripe } from "@/lib/stripe-client";
 import { formatMoney } from "@/lib/format";
 
-function PayButton({ orderId, totalMinor }: { orderId: string; totalMinor: number }) {
+/**
+ * Apple Pay / Google Pay (and Link), rendered prominently above the card
+ * form rather than buried as just another tab inside PaymentElement.
+ * Renders nothing until Stripe reports a wallet is actually available on
+ * this device/browser — onReady's availablePaymentMethods is undefined
+ * when there's nothing to show, so there's no empty button row or a
+ * dangling "or pay with card" divider on a desktop Chrome without a wallet
+ * set up. Requires no server changes: the PaymentIntent's existing
+ * automatic_payment_methods: { enabled: true } already covers wallets.
+ */
+function ExpressCheckout({ orderId, onError }: { orderId: string; onError: (message: string) => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const [visible, setVisible] = useState(false);
+
+  async function handleConfirm() {
+    if (!stripe || !elements) return;
+
+    const { error: confirmError } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/order-confirmation/${orderId}`,
+      },
+      redirect: "if_required",
+    });
+
+    if (confirmError) {
+      onError(confirmError.message ?? "Payment failed. Please try again.");
+      return;
+    }
+
+    router.push(`/order-confirmation/${orderId}`);
+  }
+
+  return (
+    <div className={visible ? "mb-5" : "hidden"}>
+      <ExpressCheckoutElement
+        onReady={(event) => setVisible(Boolean(event.availablePaymentMethods))}
+        onConfirm={handleConfirm}
+        options={{ layout: { maxColumns: 2, maxRows: 1 } }}
+      />
+      <div className="mt-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-char-300">
+        <div className="h-px flex-1 bg-char-200" />
+        Or pay with card
+        <div className="h-px flex-1 bg-char-200" />
+      </div>
+    </div>
+  );
+}
+
+function PayButton({ orderId, totalMinor, error, setError }: { orderId: string; totalMinor: number; error: string | null; setError: (message: string | null) => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handlePay() {
     if (!stripe || !elements) return;
@@ -64,6 +114,7 @@ function PayButton({ orderId, totalMinor }: { orderId: string; totalMinor: numbe
 
 export function PaymentSection({ clientSecret, orderId, totalMinor }: { clientSecret: string; orderId: string; totalMinor: number }) {
   const stripePromise = getStripe();
+  const [error, setError] = useState<string | null>(null);
   if (!stripePromise) return null;
 
   return (
@@ -83,8 +134,9 @@ export function PaymentSection({ clientSecret, orderId, totalMinor }: { clientSe
         },
       }}
     >
+      <ExpressCheckout orderId={orderId} onError={setError} />
       <PaymentElement options={{ layout: "tabs" }} />
-      <PayButton orderId={orderId} totalMinor={totalMinor} />
+      <PayButton orderId={orderId} totalMinor={totalMinor} error={error} setError={setError} />
     </Elements>
   );
 }
