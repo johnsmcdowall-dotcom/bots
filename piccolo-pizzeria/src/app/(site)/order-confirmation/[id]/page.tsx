@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { PartyPopper, MapPin, Phone, Clock } from "lucide-react";
+import { PartyPopper, MapPin, Phone, Clock, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderStatusTracker } from "@/components/order/OrderStatusTracker";
 import { AutoRefresh } from "@/components/order/AutoRefresh";
+import { OrderStatusListener } from "@/components/order/OrderStatusListener";
 import { RecordLastOrder } from "@/components/order/RecordLastOrder";
 import { ReorderButton } from "@/components/order/ReorderSheet";
 import { ClearBasketOnMount } from "@/components/checkout/ClearBasketOnMount";
@@ -24,12 +25,17 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
   if (!order) notFound();
 
   const isPending = order.paymentStatus === "pending";
+  const isTerminal = order.status === "completed" || order.status === "cancelled";
+  const isTracking = !isPending && !isTerminal;
   const mapsQuery = encodeURIComponent(`${business.addressLine1}, ${business.city}, ${business.postcode}`);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16">
       <ClearBasketOnMount />
       <AutoRefresh active={isPending} />
+      {/* Realtime push is the primary path once paid; this is a slow (60s) safety net for a missed broadcast — a dropped socket, a backgrounded tab. */}
+      <AutoRefresh active={isTracking} intervalMs={60000} maxAttempts={120} />
+      <OrderStatusListener orderId={order.id} active={isTracking} />
       {!isPending && <RecordLastOrder id={order.id} orderNumber={order.orderNumber} createdAt={order.createdAt} />}
 
       {isPending ? (
@@ -55,6 +61,12 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
 
       <div className="mt-10 rounded-2xl border border-char-200 bg-cream-50 p-6">
         <OrderStatusTracker status={order.status} />
+        {isTracking && (
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-xs font-medium text-char-400">
+            <Radio className="h-3 w-3 text-basil-500" />
+            Live — this page updates the moment your order moves.
+          </p>
+        )}
 
         <Separator className="my-6" />
 

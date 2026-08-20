@@ -2,6 +2,7 @@ import "server-only";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { memoryOrders, memoryWebhookEvents } from "@/lib/data/memory-store";
+import { sendOrderReadyEmail } from "@/lib/email";
 import type {
   OrderItemRecord,
   OrderMethod,
@@ -10,6 +11,25 @@ import type {
   OrderTiming,
 } from "@/lib/types";
 import type { OrderItemModifierRow, OrderItemRow, OrderRow } from "@/lib/supabase/database.types";
+
+/**
+ * Pushes a tiny, PII-free status ping to anyone watching this order's
+ * confirmation page (see OrderStatusListener). Deliberately a Broadcast, not
+ * a postgres_changes subscription on `orders` — that table's RLS only grants
+ * staff SELECT, and customers have no accounts to grant against, so a direct
+ * table subscription from the browser would either see nothing or require
+ * opening `orders` up to anonymous reads. Broadcast on an order-scoped topic
+ * keeps every other order's data (and this order's own PII) off the wire.
+ * Best-effort: a missed broadcast (page not open, socket hiccup) is caught
+ * by the page's own slow safety-net poll, so failures here are swallowed.
+ */
+async function broadcastOrderStatus(supabase: NonNullable<ReturnType<typeof getSupabaseAdminClient>>, orderId: string, status: OrderStatus): Promise<void> {
+  try {
+    await supabase.channel(`order-status-${orderId}`).send({ type: "broadcast", event: "status", payload: { status } });
+  } catch {
+    // Swallowed — see comment above.
+  }
+}
 
 export async function getBookedCounts(dateISO: string, method: OrderMethod): Promise<Record<string, number>> {
   try {
@@ -271,6 +291,7 @@ export async function markOrderPaid(orderId: string): Promise<void> {
 
   await supabase.from("orders").update({ payment_status: "paid", status: "received" }).eq("id", orderId);
   await supabase.from("order_status_history").insert({ order_id: orderId, status: "received", changed_by: "stripe_webhook" });
+  await broadcastOrderStatus(supabase, orderId, "received");
 
   if (row?.promo_code) {
     await supabase.rpc("increment_promo_usage", { promo_code_input: row.promo_code });
@@ -326,29 +347,43 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus, ch
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     const order = memoryOrders.get(orderId);
-    if (order) order.status = status;
+    if (!order) return;
+    const previousStatus = order.status;
+    order.status = status;
+    // No live Realtime broadcast in memory-store mode (no Supabase to send
+    // through), but the ready-email dedup rule still applies.
+    if (status === "ready" && previousStatus !== "ready") await sendOrderReadyEmail(order);
     return;
   }
+
+  const { data: existing } = await supabase.from("orders").select("status, payment_status").eq("id", orderId).maybeSingle();
+  const existingRow = existing as { status?: string; payment_status?: string } | null;
+  const previousStatus = existingRow?.status;
 
   // A *paid* order being cancelled after the fact (staff-initiated) should
   // give any limited-stock items it consumed back — this is the one case
   // where stock is released, distinct from failed/abandoned payments,
   // which never decremented anything in the first place.
-  if (status === "cancelled") {
-    const { data: existing } = await supabase.from("orders").select("payment_status").eq("id", orderId).maybeSingle();
-    if ((existing as { payment_status?: string } | null)?.payment_status === "paid") {
-      const { data: itemsData } = await supabase.from("order_items").select("product_id, quantity").eq("order_id", orderId);
-      const items = (itemsData ?? []) as { product_id: string | null; quantity: number }[];
-      await Promise.all(
-        items
-          .filter((item): item is { product_id: string; quantity: number } => Boolean(item.product_id))
-          .map((item) => supabase.rpc("increment_product_stock", { product_id_input: item.product_id, qty_input: item.quantity }))
-      );
-    }
+  if (status === "cancelled" && existingRow?.payment_status === "paid") {
+    const { data: itemsData } = await supabase.from("order_items").select("product_id, quantity").eq("order_id", orderId);
+    const items = (itemsData ?? []) as { product_id: string | null; quantity: number }[];
+    await Promise.all(
+      items
+        .filter((item): item is { product_id: string; quantity: number } => Boolean(item.product_id))
+        .map((item) => supabase.rpc("increment_product_stock", { product_id_input: item.product_id, qty_input: item.quantity }))
+    );
   }
 
   await supabase.from("orders").update({ status }).eq("id", orderId);
   await supabase.from("order_status_history").insert({ order_id: orderId, status, changed_by: changedBy });
+  await broadcastOrderStatus(supabase, orderId, status);
+
+  // Only on the transition *into* ready — re-saving the same status (a
+  // retried admin action, or toggling away and back) never re-sends it.
+  if (status === "ready" && previousStatus !== "ready") {
+    const order = await loadOrderFromSupabase(supabase, orderId);
+    if (order) await sendOrderReadyEmail(order);
+  }
 }
 
 export async function hasProcessedWebhookEvent(eventId: string): Promise<boolean> {

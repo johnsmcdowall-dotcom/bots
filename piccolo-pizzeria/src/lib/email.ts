@@ -51,3 +51,17 @@ export async function sendOrderReceivedEmail(order: OrderRecord): Promise<void> 
     `,
   });
 }
+
+/** Sent once, on the transition into "ready" — see updateOrderStatus() for the dedup against retries/re-saves. */
+export async function sendOrderReadyEmail(order: OrderRecord): Promise<void> {
+  await sendEmail({
+    to: order.customer.email,
+    subject: `Order #${order.orderNumber} is ready — Piccolo Pizzeria`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h1 style="font-size: 20px;">Order #${order.orderNumber} is ready, ${order.customer.firstName}!</h1>
+        <p>${order.method === "delivery" ? "It's on its way to you." : "Come and grab it whenever suits — we'll have it waiting."}</p>
+      </div>
+    `,
+  });
+}
