@@ -105,9 +105,20 @@ body {
 @layer base {
   * {
     border-color: var(--color-char-200);
+    /* See the note on `html` below — scroll anchoring fights the router's
+       scroll-to-top on navigation, and the anchor-node selection happens
+       per scrolling box, not just on the root, so this needs to be
+       universal rather than just on <html>. */
+    overflow-anchor: none;
   }
   html {
-    scroll-behavior: smooth;
+    /* Smooth scrolling is opted into via the `data-scroll-behavior="smooth"`
+       attribute on <html> in layout.tsx instead of this CSS property — Next.js's
+       router needs to tell its own navigation scroll-reset apart from a
+       user-triggered smooth scroll, and can only do that through the
+       attribute. Setting scroll-behavior: smooth here instead silently broke
+       the scroll-to-top on client-side navigation (e.g. /order -> /checkout
+       landed mid-page instead of at the top). */
     -webkit-text-size-adjust: 100%;
   }
   body {
@@ -120,9 +131,6 @@ body {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
     *,
     *::before,
     *::after {
@@ -135,6 +143,18 @@ body {
 }
 
 @layer utilities {
+  /* Fades the trailing edge of a horizontally-scrolling row so it reads as
+     scrollable rather than clipped — used on the date pills and category
+     pills, which otherwise crop mid-pill at small widths with no hint
+     there's more to scroll to. Only the trailing edge fades (not the
+     leading one) since the row always starts flush with real content —
+     fading both sides would make the first pill look cut off for no
+     reason. */
+  .scroll-fade-x {
+    mask-image: linear-gradient(to right, black calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent);
+  }
+
   .font-display {
     font-family: var(--font-display);
     letter-spacing: 0.01em;

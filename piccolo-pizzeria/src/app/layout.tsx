@@ -65,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-GB"
+      data-scroll-behavior="smooth"
       className={`${anton.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream-100 font-sans text-char-900">

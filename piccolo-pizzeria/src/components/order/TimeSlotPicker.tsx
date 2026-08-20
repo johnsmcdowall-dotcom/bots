@@ -16,6 +16,7 @@ export function TimeSlotPicker({
   scheduledDate,
   scheduledTime,
   onScheduleChange,
+  asapAvailable,
 }: {
   business: Pick<
     BusinessSettings,
@@ -29,6 +30,8 @@ export function TimeSlotPicker({
   scheduledDate: string | null;
   scheduledTime: string | null;
   onScheduleChange: (date: string | null, time: string | null) => void;
+  /** Whether the business is open right now — ASAP can't be fulfilled otherwise. */
+  asapAvailable: boolean;
 }) {
   const dates = useMemo(() => getOrderableDates(business, weeklyHours, specialHours), [business, weeklyHours, specialHours]);
   const [activeDate, setActiveDate] = useState(scheduledDate || dates[0]?.dateISO);
@@ -58,15 +61,21 @@ export function TimeSlotPicker({
         {business.asapOrdersEnabled && (
           <button
             type="button"
-            onClick={() => onTimingChange("asap")}
+            disabled={!asapAvailable}
+            onClick={() => asapAvailable && onTimingChange("asap")}
+            title={asapAvailable ? undefined : "We're closed right now"}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-[background-color,border-color,transform] duration-150 active:scale-[0.98]",
-              timing === "asap" ? "border-fire-500 bg-fire-500/5" : "border-char-200 hover:bg-char-900/[0.02]"
+              "flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-4 transition-[background-color,border-color,transform] duration-150 active:enabled:scale-[0.98]",
+              !asapAvailable && "cursor-not-allowed border-char-100 opacity-40",
+              asapAvailable && timing === "asap" && "border-fire-500 bg-fire-500/5",
+              asapAvailable && timing !== "asap" && "border-char-200 hover:bg-char-900/[0.02]"
             )}
           >
-            <Zap className={cn("h-5 w-5", timing === "asap" ? "text-fire-600" : "text-char-400")} />
+            <Zap className={cn("h-5 w-5", asapAvailable && timing === "asap" ? "text-fire-600" : "text-char-400")} />
             <span className="text-sm font-semibold text-char-900">ASAP</span>
-            <span className="text-[11px] text-char-400">~{business.minPrepMinutes + business.currentWaitMinutes} min</span>
+            <span className="text-[11px] text-char-400">
+              {asapAvailable ? `~${business.minPrepMinutes + business.currentWaitMinutes} min` : "Not available"}
+            </span>
           </button>
         )}
         {business.scheduledOrdersEnabled && (
@@ -89,7 +98,7 @@ export function TimeSlotPicker({
 
       {timing === "scheduled" && (
         <div className="mt-5">
-          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+          <div className="no-scrollbar scroll-fade-x flex gap-2 overflow-x-auto pb-1">
             {dates.map((d) => (
               <button
                 key={d.dateISO}
@@ -98,7 +107,7 @@ export function TimeSlotPicker({
                   onScheduleChange(d.dateISO, null);
                 }}
                 className={cn(
-                  "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition-[background-color,color,transform] duration-150 active:scale-95",
+                  "shrink-0 rounded-full px-4 py-3 text-sm font-semibold transition-[background-color,color,transform] duration-150 active:scale-95",
                   activeDate === d.dateISO ? "bg-char-900 text-cream-50" : "bg-char-900/[0.05] text-char-600"
                 )}
               >

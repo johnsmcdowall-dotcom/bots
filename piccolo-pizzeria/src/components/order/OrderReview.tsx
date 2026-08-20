@@ -104,6 +104,7 @@ export function OrderReview({
             scheduledDate={scheduledDate}
             scheduledTime={scheduledTime}
             onScheduleChange={setSchedule}
+            asapAvailable={Boolean(status?.isOpen)}
           />
         </div>
       </section>

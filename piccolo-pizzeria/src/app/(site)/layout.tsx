@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { StickyBasketBar } from "@/components/basket/StickyBasketBar";
+import { ScrollToTopOnNavigate } from "@/components/layout/ScrollToTopOnNavigate";
 import { getBusinessSettings, getSpecialHours, getWeeklyHours } from "@/lib/data/business";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <>
+      <ScrollToTopOnNavigate />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-char-900 focus:px-4 focus:py-2 focus:text-cream-50"

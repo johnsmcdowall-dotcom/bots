@@ -267,9 +267,15 @@ export async function markOrderPaymentFailed(orderId: string): Promise<void> {
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     const order = memoryOrders.get(orderId);
-    if (order) order.paymentStatus = "failed";
+    // Stripe doesn't guarantee webhook delivery order, so a "failed" event
+    // for an already-paid order (e.g. a retried intent that later
+    // succeeded) must never downgrade it back to failed.
+    if (order && order.paymentStatus !== "paid") order.paymentStatus = "failed";
     return;
   }
+  const { data } = await supabase.from("orders").select("payment_status").eq("id", orderId).maybeSingle();
+  const row = data as { payment_status?: string } | null;
+  if (row?.payment_status === "paid") return;
   await supabase.from("orders").update({ payment_status: "failed" }).eq("id", orderId);
 }
 
