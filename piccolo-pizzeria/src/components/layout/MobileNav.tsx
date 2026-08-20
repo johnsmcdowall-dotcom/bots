@@ -39,7 +39,7 @@ export function MobileNav({ business }: { business: BusinessSettings }) {
         >
           <div className="flex items-center justify-between">
             <Dialog.Title asChild>
-              <LogoWordmark tone="light" className="h-9" />
+              <LogoWordmark className="h-16" />
             </Dialog.Title>
             <Dialog.Close asChild>
               <button className="flex h-10 w-10 items-center justify-center rounded-full text-cream-100 hover:bg-cream-50/10" aria-label="Close menu">

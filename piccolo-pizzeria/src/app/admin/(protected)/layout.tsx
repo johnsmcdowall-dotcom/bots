@@ -10,7 +10,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
     return (
       <div className="flex min-h-dvh items-center justify-center bg-char-900 px-4">
         <div className="w-full max-w-md rounded-3xl bg-cream-50 p-8 text-center shadow-2xl">
-          <div className="mx-auto w-14">
+          <div className="mx-auto w-20">
             <LogoMark />
           </div>
           <div className="mt-6 flex items-center justify-center gap-2 text-fire-600">

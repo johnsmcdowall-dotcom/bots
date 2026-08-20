@@ -21,7 +21,7 @@ export function Footer({ business, weeklyHours }: { business: BusinessSettings; 
     <footer className="texture-grain border-t border-cream-100/10 bg-char-900 text-cream-100">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1">
-          <div className="w-14">
+          <div className="w-20">
             <LogoMark />
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-100/70">{business.tagline}</p>

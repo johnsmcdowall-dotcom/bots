@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/brand/LogoMark";
 import { OpeningStatusBadge } from "@/components/home/OpeningStatusBadge";
 import type { BusinessSettings, SpecialHours, WeeklyHours } from "@/lib/types";
 
@@ -27,6 +28,10 @@ export function Hero({
       <div className="absolute inset-0 bg-gradient-to-t from-char-900 via-char-900/40 to-char-900/10" />
 
       <div className="relative mx-auto flex min-h-[86dvh] max-w-7xl flex-col justify-end px-4 pb-14 pt-28 sm:px-6 sm:pb-20 lg:px-8 lg:pb-28">
+        <div className="mb-6 w-24 drop-shadow-[0_6px_20px_rgba(0,0,0,0.5)] sm:w-28 lg:w-32">
+          <LogoMark />
+        </div>
+
         <OpeningStatusBadge
           business={business}
           weeklyHours={weeklyHours}

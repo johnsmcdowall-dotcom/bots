@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-char-900 px-4">
       <div className="w-full max-w-sm rounded-3xl bg-cream-50 p-8 shadow-2xl">
-        <div className="mx-auto w-14">
+        <div className="mx-auto w-20">
           <LogoMark />
         </div>
         <h1 className="mt-6 text-center font-display text-2xl text-char-900">Admin Sign In</h1>

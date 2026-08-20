@@ -5,7 +5,7 @@ import { LogoMark } from "@/components/brand/LogoMark";
 export default function NotFound() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 text-center">
-      <div className="w-16">
+      <div className="w-24">
         <LogoMark />
       </div>
       <h1 className="mt-6 font-display text-4xl uppercase tracking-tight text-char-900">Page Not Found</h1>

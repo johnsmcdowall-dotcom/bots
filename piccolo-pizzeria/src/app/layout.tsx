@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Manrope, Kaushan_Script } from "next/font/google";
+import { Anton, Manrope } from "next/font/google";
 import { Toaster } from "sonner";
 import { SITE_URL } from "@/lib/config";
 import "./globals.css";
@@ -14,13 +14,6 @@ const anton = Anton({
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const kaushan = Kaushan_Script({
-  variable: "--font-script",
-  subsets: ["latin"],
-  weight: "400",
   display: "swap",
 });
 
@@ -71,7 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-GB"
-      className={`${anton.variable} ${manrope.variable} ${kaushan.variable} h-full antialiased`}
+      className={`${anton.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream-100 font-sans text-char-900">
         {children}

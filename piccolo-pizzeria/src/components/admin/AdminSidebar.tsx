@@ -60,7 +60,7 @@ export function AdminSidebar({ profile }: { profile: AdminProfile }) {
     <>
       {/* Mobile top bar */}
       <div className="flex items-center justify-between border-b border-cream-100/10 bg-char-900 px-4 py-3 md:hidden">
-        <LogoWordmark tone="light" className="h-8" />
+        <LogoWordmark className="h-12" />
         <button onClick={() => setMobileOpen(true)} className="p-2 text-cream-50" aria-label="Open menu">
           <Menu className="h-5 w-5" />
         </button>
@@ -70,7 +70,7 @@ export function AdminSidebar({ profile }: { profile: AdminProfile }) {
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div className="w-72 bg-char-900 p-5">
             <div className="flex items-center justify-between">
-              <LogoWordmark tone="light" className="h-8" />
+              <LogoWordmark className="h-12" />
               <button onClick={() => setMobileOpen(false)} className="p-2 text-cream-50" aria-label="Close menu">
                 <X className="h-5 w-5" />
               </button>
@@ -91,7 +91,7 @@ export function AdminSidebar({ profile }: { profile: AdminProfile }) {
 
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col bg-char-900 p-5 md:flex">
-        <LogoWordmark tone="light" className="h-9" />
+        <LogoWordmark className="h-14" />
         <div className="mt-3 rounded-xl bg-cream-50/5 px-3 py-2 text-xs text-cream-100/60">
           Signed in as <span className="font-semibold text-cream-100">{profile.email}</span>
           <span className="ml-1.5 rounded-full bg-fire-500/20 px-2 py-0.5 text-[10px] font-bold uppercase text-fire-400">
