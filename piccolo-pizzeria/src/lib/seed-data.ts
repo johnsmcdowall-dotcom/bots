@@ -6,6 +6,7 @@ import type {
   Product,
   PromoCode,
   SpecialHours,
+  UpsellRule,
   WeeklyHours,
 } from "./types";
 
@@ -561,4 +562,9 @@ export const seedPromoCodes: PromoCode[] = [
     timesUsed: 0,
     active: true,
   },
+];
+
+export const seedUpsellRules: UpsellRule[] = [
+  { id: "upsell-pizza-garlic-mayo", triggerType: "category", triggerProductId: null, triggerCategoryId: "cat-pizzas", suggestedProductId: "p-dip-garlic-mayo", sortOrder: 0 },
+  { id: "upsell-pizza-coke", triggerType: "category", triggerProductId: null, triggerCategoryId: "cat-pizzas", suggestedProductId: "p-coke", sortOrder: 1 },
 ];

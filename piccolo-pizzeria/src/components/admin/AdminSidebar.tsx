@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, ClipboardList, UtensilsCrossed, Clock, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, ClipboardList, UtensilsCrossed, Clock, Settings, Sparkles, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { LogoWordmark } from "@/components/brand/LogoWordmark";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   { href: "/admin/orders", label: "Live Orders", icon: ClipboardList, adminOnly: false },
   { href: "/admin/menu", label: "Menu", icon: UtensilsCrossed, adminOnly: true },
+  { href: "/admin/upsells", label: "Upsells", icon: Sparkles, adminOnly: true },
   { href: "/admin/opening-hours", label: "Opening Hours", icon: Clock, adminOnly: true },
   { href: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
 ];

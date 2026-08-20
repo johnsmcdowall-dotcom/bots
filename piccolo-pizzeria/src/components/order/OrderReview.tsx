@@ -10,19 +10,25 @@ import { OrderTypeSelector } from "@/components/order/OrderTypeSelector";
 import { TimeSlotPicker } from "@/components/order/TimeSlotPicker";
 import { OrderSummary } from "@/components/order/OrderSummary";
 import { PromoCodeInput } from "@/components/order/PromoCodeInput";
+import { UpsellSheet } from "@/components/order/UpsellSheet";
 import { useBasketStore } from "@/store/basket-store";
 import { useOpeningStatus } from "@/hooks/useOpeningStatus";
 import { useHasMounted } from "@/hooks/useHasMounted";
-import type { BusinessSettings, SpecialHours, WeeklyHours } from "@/lib/types";
+import { computeUpsellSuggestions } from "@/lib/upsell";
+import type { BusinessSettings, Product, SpecialHours, UpsellRule, WeeklyHours } from "@/lib/types";
 
 export function OrderReview({
   business,
   weeklyHours,
   specialHours,
+  products,
+  upsellRules,
 }: {
   business: BusinessSettings;
   weeklyHours: WeeklyHours;
   specialHours: SpecialHours[];
+  products: Product[];
+  upsellRules: UpsellRule[];
 }) {
   const mounted = useHasMounted();
   const router = useRouter();
@@ -58,9 +64,15 @@ export function OrderReview({
   const asapBlocked = timing === "asap" && status && !status.isOpen;
   const scheduleIncomplete = timing === "scheduled" && (!scheduledDate || !scheduledTime);
   const canContinue = !asapBlocked && !scheduleIncomplete && !business.orderingPaused;
+  const upsellSuggestions = computeUpsellSuggestions(
+    lines.map((l) => l.productId),
+    upsellRules,
+    products
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <UpsellSheet suggestions={upsellSuggestions} />
       <h1 className="font-display text-4xl uppercase tracking-tight text-char-900 sm:text-5xl">Your Order</h1>
 
       {business.orderingPaused && (

@@ -119,6 +119,15 @@ export interface ProductModifierGroupRow {
   modifier_group_id: string;
 }
 
+export interface UpsellRuleRow {
+  id: string;
+  trigger_type: "product" | "category";
+  trigger_product_id: string | null;
+  trigger_category_id: string | null;
+  suggested_product_id: string;
+  sort_order: number;
+}
+
 export interface DeliveryZoneRow {
   id: string;
   postcode_prefixes: string[];
@@ -245,6 +254,7 @@ export interface Database {
       modifiers: TableDef<ModifierRow>;
       products: TableDef<ProductRow>;
       product_modifier_groups: TableDef<ProductModifierGroupRow>;
+      upsell_rules: TableDef<UpsellRuleRow>;
       delivery_zones: TableDef<DeliveryZoneRow>;
       promo_codes: TableDef<PromoCodeRow>;
       customers: TableDef<CustomerRow>;

@@ -204,6 +204,15 @@ export interface OrderItemRecord {
   }[];
 }
 
+export interface UpsellRule {
+  id: string;
+  triggerType: "product" | "category";
+  triggerProductId: string | null;
+  triggerCategoryId: string | null;
+  suggestedProductId: string;
+  sortOrder: number;
+}
+
 export interface OrderRecord {
   id: string;
   orderNumber: string;

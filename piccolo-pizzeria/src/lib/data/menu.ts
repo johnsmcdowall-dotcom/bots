@@ -1,8 +1,8 @@
 import "server-only";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { seedCategories, seedModifierGroups, seedProducts, seedPromoCodes } from "@/lib/seed-data";
-import type { Category, ModifierGroup, Product, PromoCode } from "@/lib/types";
+import { seedCategories, seedModifierGroups, seedProducts, seedPromoCodes, seedUpsellRules } from "@/lib/seed-data";
+import type { Category, ModifierGroup, Product, PromoCode, UpsellRule } from "@/lib/types";
 import type {
   CategoryRow,
   ModifierGroupRow,
@@ -10,6 +10,7 @@ import type {
   ProductModifierGroupRow,
   ProductRow,
   PromoCodeRow,
+  UpsellRuleRow,
 } from "@/lib/supabase/database.types";
 
 export async function getCategories(): Promise<Category[]> {
@@ -102,6 +103,28 @@ export async function getProducts(): Promise<Product[]> {
     }));
   } catch {
     return seedProducts;
+  }
+}
+
+export async function getUpsellRules(): Promise<UpsellRule[]> {
+  try {
+    const supabase = await getSupabaseServerClient();
+    if (!supabase) return seedUpsellRules;
+
+    const { data, error } = await supabase.from("upsell_rules").select("*").order("sort_order");
+    if (error || !data?.length) return seedUpsellRules;
+    const rows = data as UpsellRuleRow[];
+
+    return rows.map((row) => ({
+      id: row.id,
+      triggerType: row.trigger_type,
+      triggerProductId: row.trigger_product_id,
+      triggerCategoryId: row.trigger_category_id,
+      suggestedProductId: row.suggested_product_id,
+      sortOrder: row.sort_order,
+    }));
+  } catch {
+    return seedUpsellRules;
   }
 }
 
