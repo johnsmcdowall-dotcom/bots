@@ -97,6 +97,8 @@ export async function getProducts(): Promise<Product[]> {
       isNew: row.is_new,
       sortOrder: row.sort_order,
       modifierGroupIds: links.filter((l) => l.product_id === row.id).map((l) => l.modifier_group_id),
+      stockLimited: row.stock_limited,
+      stockRemaining: row.stock_remaining,
     }));
   } catch {
     return seedProducts;

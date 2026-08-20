@@ -110,6 +110,8 @@ export interface ProductRow {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  stock_limited: boolean;
+  stock_remaining: number | null;
 }
 
 export interface ProductModifierGroupRow {

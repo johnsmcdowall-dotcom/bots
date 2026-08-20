@@ -28,6 +28,8 @@ const EMPTY: ProductFormInput = {
   popular: false,
   isNew: false,
   sortOrder: 0,
+  stockLimited: false,
+  stockRemaining: null,
 };
 
 export function ProductFormSheet({
@@ -65,6 +67,8 @@ export function ProductFormSheet({
         popular: product.popular,
         isNew: product.isNew,
         sortOrder: product.sortOrder,
+        stockLimited: product.stockLimited,
+        stockRemaining: product.stockRemaining,
       });
     } else {
       setForm({ ...EMPTY, categoryId: categories[0]?.id ?? "" });
@@ -180,6 +184,32 @@ export function ProductFormSheet({
             <label className="flex items-center gap-1.5 text-sm text-char-700">
               <Checkbox checked={form.isNew} onCheckedChange={(v) => set("isNew", Boolean(v))} /> New
             </label>
+          </div>
+
+          <div className="rounded-xl border border-char-200 p-3">
+            <label className="flex items-center gap-1.5 text-sm text-char-700">
+              <Checkbox
+                checked={form.stockLimited}
+                onCheckedChange={(v) => set("stockLimited", Boolean(v))}
+              />
+              Track limited stock (e.g. a weekly special)
+            </label>
+            {form.stockLimited && (
+              <div className="mt-3">
+                <Label htmlFor="p-stock">Quantity remaining</Label>
+                <Input
+                  id="p-stock"
+                  type="number"
+                  min={0}
+                  className="mt-1.5 max-w-[10rem]"
+                  value={form.stockRemaining ?? 0}
+                  onChange={(e) => set("stockRemaining", Math.max(0, Number(e.target.value)))}
+                />
+                <p className="mt-1 text-xs text-char-400">
+                  Decreases automatically as paid orders come in. Leave unchecked above for unlimited products.
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <div className="border-t border-char-200 p-4 sm:px-6">

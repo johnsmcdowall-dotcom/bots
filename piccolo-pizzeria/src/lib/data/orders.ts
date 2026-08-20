@@ -265,6 +265,35 @@ export async function markOrderPaid(orderId: string): Promise<void> {
   if (row?.promo_code) {
     await supabase.rpc("increment_promo_usage", { promo_code_input: row.promo_code });
   }
+
+  // Decrement limited-stock items only now that payment is confirmed — see
+  // 0004_stock.sql for why this is the chosen reservation point (never at
+  // order creation, so a failed/abandoned payment never consumes stock).
+  // The RPC no-ops (returns false) for products that aren't stock_limited,
+  // so this is safe to call unconditionally for every line without an
+  // extra lookup first.
+  const { data: itemsData } = await supabase.from("order_items").select("product_id, quantity, name").eq("order_id", orderId);
+  const items = (itemsData ?? []) as { product_id: string | null; quantity: number; name: string }[];
+  const oversoldNames: string[] = [];
+  for (const item of items) {
+    if (!item.product_id) continue;
+    const { data: product } = await supabase.from("products").select("stock_limited").eq("id", item.product_id).maybeSingle();
+    if (!(product as { stock_limited?: boolean } | null)?.stock_limited) continue;
+    const { data: ok } = await supabase.rpc("decrement_product_stock", { product_id_input: item.product_id, qty_input: item.quantity });
+    if (!ok) oversoldNames.push(item.name);
+  }
+
+  // Payment already succeeded — we can't silently undo that — but in the
+  // rare case two near-simultaneous payments both cleared for the last
+  // unit(s) of a limited item, flag it clearly so staff see it on the
+  // order and can call the customer, rather than the order silently
+  // looking identical to any other paid order.
+  if (oversoldNames.length > 0) {
+    const { data: current } = await supabase.from("orders").select("notes").eq("id", orderId).maybeSingle();
+    const existingNotes = (current as { notes?: string | null } | null)?.notes ?? "";
+    const flag = `⚠ Stock conflict: ${oversoldNames.join(", ")} may be oversold — please verify before preparing.`;
+    await supabase.from("orders").update({ notes: existingNotes ? `${existingNotes}\n${flag}` : flag }).eq("id", orderId);
+  }
 }
 
 export async function markOrderPaymentFailed(orderId: string): Promise<void> {
@@ -290,6 +319,24 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus, ch
     if (order) order.status = status;
     return;
   }
+
+  // A *paid* order being cancelled after the fact (staff-initiated) should
+  // give any limited-stock items it consumed back — this is the one case
+  // where stock is released, distinct from failed/abandoned payments,
+  // which never decremented anything in the first place.
+  if (status === "cancelled") {
+    const { data: existing } = await supabase.from("orders").select("payment_status").eq("id", orderId).maybeSingle();
+    if ((existing as { payment_status?: string } | null)?.payment_status === "paid") {
+      const { data: itemsData } = await supabase.from("order_items").select("product_id, quantity").eq("order_id", orderId);
+      const items = (itemsData ?? []) as { product_id: string | null; quantity: number }[];
+      await Promise.all(
+        items
+          .filter((item): item is { product_id: string; quantity: number } => Boolean(item.product_id))
+          .map((item) => supabase.rpc("increment_product_stock", { product_id_input: item.product_id, qty_input: item.quantity }))
+      );
+    }
+  }
+
   await supabase.from("orders").update({ status }).eq("id", orderId);
   await supabase.from("order_status_history").insert({ order_id: orderId, status, changed_by: changedBy });
 }

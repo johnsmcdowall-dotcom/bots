@@ -67,6 +67,10 @@ export interface Product {
   isNew: boolean;
   sortOrder: number;
   modifierGroupIds: string[];
+  /** Optional limited-quantity tracking — most products leave this false and are unlimited. */
+  stockLimited: boolean;
+  /** Only meaningful when stockLimited is true. */
+  stockRemaining: number | null;
 }
 
 export interface DayHours {

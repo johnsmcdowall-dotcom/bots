@@ -18,9 +18,20 @@ const margherita: Product = {
   isNew: false,
   sortOrder: 0,
   modifierGroupIds: ["mg-extras"],
+  stockLimited: false,
+  stockRemaining: null,
 };
 
 const soldOutPizza: Product = { ...margherita, id: "p-soldout", slug: "soldout", name: "Sold Out Pizza", soldOut: true };
+
+const limitedSpecial: Product = {
+  ...margherita,
+  id: "p-limited",
+  slug: "limited",
+  name: "Limited Special",
+  stockLimited: true,
+  stockRemaining: 2,
+};
 
 const extras: ModifierGroup = {
   id: "mg-extras",
@@ -49,7 +60,7 @@ const requiredBase: ModifierGroup = {
 const withRequiredBase: Product = { ...margherita, id: "p-withbase", slug: "withbase", modifierGroupIds: ["mg-base"] };
 
 const deps: PricingDeps = {
-  products: [margherita, soldOutPizza, withRequiredBase],
+  products: [margherita, soldOutPizza, withRequiredBase, limitedSpecial],
   modifierGroups: [extras, requiredBase],
   deliveryZones: [
     { id: "dz-1", postcodePrefixes: ["TS18"], feeMinor: 250, minOrderMinor: 1500, freeDeliveryThresholdMinor: 3500, estimatedMinutes: 35 },
@@ -170,5 +181,21 @@ describe("calculateOrder", () => {
 
   it("rejects an empty basket", () => {
     expect(() => calculateOrder({ lines: [], method: "collection" }, deps)).toThrow(PricingError);
+  });
+
+  it("allows ordering a limited-stock item within the remaining quantity", () => {
+    const result = calculateOrder({ lines: [{ productId: "p-limited", quantity: 2, modifierOptionIds: [] }], method: "collection" }, deps);
+    expect(result.items[0].quantity).toBe(2);
+  });
+
+  it("rejects ordering more of a limited-stock item than remains (Stage 2)", () => {
+    expect(() =>
+      calculateOrder({ lines: [{ productId: "p-limited", quantity: 3, modifierOptionIds: [] }], method: "collection" }, deps)
+    ).toThrowError(/Only 2 of Limited Special left/);
+  });
+
+  it("does not apply stock limits to products that aren't stock-limited", () => {
+    const result = calculateOrder({ lines: [{ productId: "p-margherita", quantity: 20, modifierOptionIds: [] }], method: "collection" }, deps);
+    expect(result.items[0].quantity).toBe(20);
   });
 });

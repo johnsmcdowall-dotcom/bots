@@ -2,6 +2,7 @@ import { Leaf, Sprout, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ProductImage } from "@/components/media/ProductImage";
 import { formatMoney } from "@/lib/format";
+import { isSoldOut, lowStockLabel } from "@/lib/product";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/types";
 
@@ -13,6 +14,9 @@ const DIETARY_ICON = {
 } as const;
 
 export function ProductCardContent({ product, className }: { product: Product; className?: string }) {
+  const soldOut = isSoldOut(product);
+  const stockLabel = !soldOut ? lowStockLabel(product) : null;
+
   return (
     <div className={cn("group flex h-full flex-col overflow-hidden rounded-2xl bg-cream-50 shadow-sm ring-1 ring-char-200/60 transition-[transform,box-shadow] duration-200", "hover:-translate-y-0.5 hover:shadow-lg", className)}>
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-char-900">
@@ -22,7 +26,7 @@ export function ProductCardContent({ product, className }: { product: Product; c
           {product.featured && !product.isNew && <Badge variant="ember">Featured</Badge>}
           {product.popular && !product.featured && !product.isNew && <Badge variant="dark">Popular</Badge>}
         </div>
-        {product.soldOut && (
+        {soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-char-900/60 backdrop-blur-[1px]">
             <Badge variant="soldout" className="text-sm">Sold Out</Badge>
           </div>
@@ -34,6 +38,11 @@ export function ProductCardContent({ product, className }: { product: Product; c
           <h3 className="font-display text-xl uppercase leading-tight tracking-tight text-char-900 sm:text-2xl">{product.name}</h3>
           <span className="shrink-0 font-display text-xl text-fire-600 sm:text-2xl">{formatMoney(product.priceMinor)}</span>
         </div>
+        {stockLabel && (
+          <div>
+            <Badge variant="warning">{stockLabel}</Badge>
+          </div>
+        )}
         {product.description && <p className="line-clamp-2 text-sm leading-relaxed text-char-500">{product.description}</p>}
         {product.dietary.length > 0 && (
           <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-2 text-char-400">

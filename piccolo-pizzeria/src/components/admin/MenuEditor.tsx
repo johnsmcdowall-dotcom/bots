@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Minus, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ProductImage } from "@/components/media/ProductImage";
 import { ProductFormSheet } from "@/components/admin/ProductFormSheet";
-import { deleteProductAction, toggleProductSoldOutAction } from "@/lib/actions/menu";
+import { adjustProductStockAction, deleteProductAction, toggleProductSoldOutAction } from "@/lib/actions/menu";
 import { formatMoney } from "@/lib/format";
 import type { Category, Product } from "@/lib/types";
 
@@ -31,6 +31,18 @@ export function MenuEditor({ categories, products }: { categories: Category[]; p
       if (res?.error) {
         toast.error(res.error);
         setItems((prev) => prev.map((p) => (p.id === product.id ? { ...p, soldOut: !soldOut } : p)));
+      }
+    });
+  }
+
+  function handleAdjustStock(product: Product, delta: number) {
+    const next = Math.max(0, (product.stockRemaining ?? 0) + delta);
+    setItems((prev) => prev.map((p) => (p.id === product.id ? { ...p, stockRemaining: next } : p)));
+    startTransition(async () => {
+      const res = await adjustProductStockAction(product.id, delta);
+      if (res?.error) {
+        toast.error(res.error);
+        setItems((prev) => prev.map((p) => (p.id === product.id ? { ...p, stockRemaining: product.stockRemaining } : p)));
       }
     });
   }
@@ -79,6 +91,17 @@ export function MenuEditor({ categories, products }: { categories: Category[]; p
                     <p className="text-sm text-char-500">{formatMoney(product.priceMinor)}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+                    {product.stockLimited && (
+                      <div className="flex items-center gap-1 rounded-full border border-char-200 px-1">
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleAdjustStock(product, -1)} aria-label="Decrease stock">
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-6 text-center text-xs font-semibold tabular-nums text-char-700">{product.stockRemaining ?? 0}</span>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleAdjustStock(product, 1)} aria-label="Increase stock">
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Switch checked={!product.soldOut} onCheckedChange={(v) => handleToggleSoldOut(product, !v)} />
                       <span className="hidden text-xs font-semibold text-char-500 sm:inline">

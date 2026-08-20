@@ -82,6 +82,15 @@ export function calculateOrder(input: PriceCartInput, deps: PricingDeps): Priced
     if (product.soldOut) {
       throw new PricingError("sold_out", `${product.name} is currently sold out.`);
     }
+    // Courtesy check against the last-known stock count — catches the
+    // common case (someone else bought the rest since the page loaded)
+    // before the customer even reaches payment. The actual guarantee
+    // against overselling under concurrency is the atomic decrement at
+    // payment success (see markOrderPaid / decrement_product_stock), not
+    // this read, which can still be stale by the time payment completes.
+    if (product.stockLimited && (product.stockRemaining ?? 0) < line.quantity) {
+      throw new PricingError("insufficient_stock", `Only ${product.stockRemaining ?? 0} of ${product.name} left.`);
+    }
 
     const groups = deps.modifierGroups.filter((g) => product.modifierGroupIds.includes(g.id));
     const selectedByGroup = new Map<string, string[]>();

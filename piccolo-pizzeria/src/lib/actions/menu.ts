@@ -22,6 +22,42 @@ export async function toggleProductSoldOutAction(productId: string, soldOut: boo
   return { success: true };
 }
 
+/**
+ * Quick +/- stock nudge for the menu list, mirroring
+ * toggleProductSoldOutAction's pattern. Uses the same atomic RPCs as the
+ * payment-side stock decrement rather than a read-then-write, so a
+ * decrease can never push stock below 0 even if two staff tap it at once.
+ */
+export async function adjustProductStockAction(productId: string, delta: number) {
+  await requireAdmin();
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Supabase is not configured" };
+
+  const { error } =
+    delta >= 0
+      ? await supabase.rpc("increment_product_stock", { product_id_input: productId, qty_input: delta })
+      : await supabase.rpc("decrement_product_stock", { product_id_input: productId, qty_input: -delta });
+  if (error) return { error: error.message };
+
+  revalidateMenu();
+  return { success: true };
+}
+
+export async function setProductStockAction(productId: string, input: { stockLimited: boolean; stockRemaining: number | null }) {
+  await requireAdmin();
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Supabase is not configured" };
+
+  const { error } = await supabase
+    .from("products")
+    .update({ stock_limited: input.stockLimited, stock_remaining: input.stockLimited ? Math.max(0, input.stockRemaining ?? 0) : null })
+    .eq("id", productId);
+  if (error) return { error: error.message };
+
+  revalidateMenu();
+  return { success: true };
+}
+
 export async function toggleModifierSoldOutAction(modifierId: string, soldOut: boolean) {
   await requireAdmin();
   const supabase = await getSupabaseServerClient();
@@ -48,6 +84,8 @@ export interface ProductFormInput {
   popular: boolean;
   isNew: boolean;
   sortOrder: number;
+  stockLimited: boolean;
+  stockRemaining: number | null;
 }
 
 export async function upsertProductAction(input: ProductFormInput) {
@@ -68,6 +106,8 @@ export async function upsertProductAction(input: ProductFormInput) {
     popular: input.popular,
     is_new: input.isNew,
     sort_order: input.sortOrder,
+    stock_limited: input.stockLimited,
+    stock_remaining: input.stockLimited ? Math.max(0, input.stockRemaining ?? 0) : null,
   };
 
   const { error } = input.id

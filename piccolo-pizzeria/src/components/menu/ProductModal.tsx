@@ -11,6 +11,7 @@ import { ModifierSelector } from "@/components/menu/ModifierSelector";
 import { ProductImage } from "@/components/media/ProductImage";
 import { useBasketStore } from "@/store/basket-store";
 import { formatMoney } from "@/lib/format";
+import { isSoldOut, lowStockLabel } from "@/lib/product";
 import type { ModifierGroup, Product } from "@/lib/types";
 
 export function ProductModal({
@@ -51,6 +52,10 @@ export function ProductModal({
 
   if (!product) return null;
 
+  const soldOut = isSoldOut(product);
+  const stockLabel = !soldOut ? lowStockLabel(product) : null;
+  const maxQuantity = product.stockLimited ? Math.max(1, product.stockRemaining ?? 0) : 20;
+
   const modifierTotal = groups.reduce((sum, group) => {
     const selectedIds = selections[group.id] ?? [];
     return sum + selectedIds.reduce((s, id) => s + (group.options.find((o) => o.id === id)?.priceMinor ?? 0), 0);
@@ -59,7 +64,7 @@ export function ProductModal({
   const total = unitPrice * quantity;
 
   const unmetRequired = groups.filter((g) => g.required && (selections[g.id]?.length ?? 0) < Math.max(1, g.minSelect));
-  const canAdd = !product.soldOut && unmetRequired.length === 0;
+  const canAdd = !soldOut && unmetRequired.length === 0;
 
   function handleAdd() {
     if (!product || !canAdd) return;
@@ -87,7 +92,7 @@ export function ProductModal({
       <SheetContent side="right" className="sm:max-w-lg">
         <div className="relative h-56 w-full shrink-0 overflow-hidden rounded-t-3xl bg-char-800 sm:h-64 sm:rounded-t-none">
           <ProductImage imageUrl={product.imageUrl} alt={product.name} priority />
-          {product.soldOut && (
+          {soldOut && (
             <div className="absolute inset-0 flex items-center justify-center bg-char-900/60">
               <Badge variant="soldout" className="text-sm">Sold Out</Badge>
             </div>
@@ -98,7 +103,10 @@ export function ProductModal({
           <SheetHeader>
             <SheetTitle>{product.name}</SheetTitle>
             {product.description && <SheetDescription className="mt-1">{product.description}</SheetDescription>}
-            <p className="mt-2 font-display text-xl text-fire-600">{formatMoney(product.priceMinor)}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <p className="font-display text-xl text-fire-600">{formatMoney(product.priceMinor)}</p>
+              {stockLabel && <Badge variant="warning">{stockLabel}</Badge>}
+            </div>
           </SheetHeader>
 
           <div className="px-5 sm:px-6">
@@ -141,15 +149,16 @@ export function ProductModal({
             <span className="w-6 text-center font-semibold tabular-nums">{quantity}</span>
             <button
               type="button"
-              onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-              className="flex h-11 w-11 items-center justify-center text-char-700"
+              onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+              className="flex h-11 w-11 items-center justify-center text-char-700 disabled:opacity-30"
+              disabled={quantity >= maxQuantity}
               aria-label="Increase quantity"
             >
               <Plus className="h-4 w-4" />
             </button>
           </div>
           <Button size="lg" variant="accent" className="flex-1" disabled={!canAdd} onClick={handleAdd}>
-            {product.soldOut ? "Sold Out" : `Add to Order · ${formatMoney(total)}`}
+            {soldOut ? "Sold Out" : `Add to Order · ${formatMoney(total)}`}
           </Button>
         </div>
       </SheetContent>
