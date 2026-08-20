@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { OrderCard } from "@/components/admin/OrderCard";
+import { PrepTimeControl } from "@/components/admin/PrepTimeControl";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import type { OrderRecord, OrderStatus } from "@/lib/types";
 
@@ -15,7 +16,15 @@ const COLUMNS: { status: OrderStatus; label: string }[] = [
   { status: "cancelled", label: "Cancelled" },
 ];
 
-export function OrderBoard({ initialOrders }: { initialOrders: OrderRecord[] }) {
+export function OrderBoard({
+  initialOrders,
+  minPrepMinutes,
+  currentWaitMinutes,
+}: {
+  initialOrders: OrderRecord[];
+  minPrepMinutes: number;
+  currentWaitMinutes: number;
+}) {
   const [orders, setOrders] = useState(initialOrders);
   const [refreshing, setRefreshing] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -54,14 +63,17 @@ export function OrderBoard({ initialOrders }: { initialOrders: OrderRecord[] }) 
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl text-char-900">Live Orders</h1>
-        <button
-          onClick={refresh}
-          className="flex items-center gap-1.5 rounded-full bg-char-900/5 px-3 py-1.5 text-xs font-semibold text-char-600 hover:bg-char-900/10"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          <PrepTimeControl minPrepMinutes={minPrepMinutes} currentWaitMinutes={currentWaitMinutes} />
+          <button
+            onClick={refresh}
+            className="flex items-center gap-1.5 rounded-full bg-char-900/5 px-3 py-1.5 text-xs font-semibold text-char-600 hover:bg-char-900/10"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 overflow-x-auto sm:grid-cols-2 xl:grid-cols-6">

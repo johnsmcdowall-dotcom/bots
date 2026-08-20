@@ -40,5 +40,6 @@ export async function updateBusinessSettingsAction(input: Partial<BusinessSettin
 
   revalidatePath("/", "layout");
   revalidatePath("/admin/settings");
+  revalidatePath("/admin/orders");
   return { success: true };
 }

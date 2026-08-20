@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Zap, CalendarClock } from "lucide-react";
 import { getOrderableDates } from "@/lib/slots";
+import { estimatedWaitRange } from "@/lib/prep-time";
 import { cn } from "@/lib/utils";
 import type { BusinessSettings, OrderMethod, OrderTiming, SpecialHours, TimeSlot, WeeklyHours } from "@/lib/types";
 
@@ -74,7 +75,7 @@ export function TimeSlotPicker({
             <Zap className={cn("h-5 w-5", asapAvailable && timing === "asap" ? "text-fire-600" : "text-char-400")} />
             <span className="text-sm font-semibold text-char-900">ASAP</span>
             <span className="text-[11px] text-char-400">
-              {asapAvailable ? `~${business.minPrepMinutes + business.currentWaitMinutes} min` : "Not available"}
+              {asapAvailable ? estimatedWaitRange(business).label : "Not available"}
             </span>
           </button>
         )}
