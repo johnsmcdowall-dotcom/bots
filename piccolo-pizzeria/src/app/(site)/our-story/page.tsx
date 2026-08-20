@@ -48,7 +48,7 @@ export default function OurStoryPage() {
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-4">
-          <div className="relative aspect-square overflow-hidden rounded-2xl">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-char-800">
             <Image
               src="/images/real/trailer-interior.jpg"
               alt="Inside the Piccolo Pizzeria trailer"
@@ -57,7 +57,7 @@ export default function OurStoryPage() {
               className="object-cover"
             />
           </div>
-          <div className="relative aspect-square overflow-hidden rounded-2xl">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-char-800">
             <Image
               src="/images/real/pizza-vegetarian.jpg"
               alt="A vegetarian pizza fresh from the oven"

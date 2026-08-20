@@ -99,7 +99,7 @@ export function CheckoutForm({
         <Textarea id="notes" placeholder="Anything we should know?" className="mt-1.5" rows={2} {...register("notes")} />
       </div>
 
-      <Button type="submit" size="xl" className="w-full" disabled={submitting}>
+      <Button type="submit" size="xl" variant="accent" className="w-full" disabled={submitting}>
         {submitting ? "Please wait…" : "Continue to Payment"}
       </Button>
     </form>

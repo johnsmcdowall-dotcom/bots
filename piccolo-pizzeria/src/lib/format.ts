@@ -26,3 +26,15 @@ export function formatHours(hhmm: string): string {
   const hour12 = h % 12 === 0 ? 12 : h % 12;
   return m === 0 ? `${hour12}${period}` : `${hour12}:${String(m).padStart(2, "0")}${period}`;
 }
+
+/**
+ * Free base-choice selections (e.g. "Classic Woodfired Base") are the
+ * default on every pizza, so listing them in the basket/checkout/
+ * confirmation reads like a repetitive, generic description rather than
+ * useful information. The full modifier — including the base — is still
+ * sent to the server and shown on the admin order board for the kitchen;
+ * this only trims what's surfaced in the compact customer-facing summary.
+ */
+export function summaryModifiers<T extends { groupName: string; priceMinor: number }>(modifiers: T[]): T[] {
+  return modifiers.filter((m) => !(m.groupName === "Choose Your Base" && m.priceMinor === 0));
+}

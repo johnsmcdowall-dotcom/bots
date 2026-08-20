@@ -3,12 +3,13 @@
 import { Minus, Plus, X } from "lucide-react";
 import { ProductImage } from "@/components/media/ProductImage";
 import { useBasketStore, lineTotal } from "@/store/basket-store";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, summaryModifiers } from "@/lib/format";
 import type { CartLine } from "@/lib/types";
 
 export function BasketItem({ line }: { line: CartLine }) {
   const updateQuantity = useBasketStore((s) => s.updateQuantity);
   const removeLine = useBasketStore((s) => s.removeLine);
+  const shownModifiers = summaryModifiers(line.modifiers);
 
   return (
     <div className="flex gap-4 py-4">
@@ -21,8 +22,8 @@ export function BasketItem({ line }: { line: CartLine }) {
           <h3 className="font-display text-base text-char-900">{line.name}</h3>
           <span className="shrink-0 font-semibold text-char-900">{formatMoney(lineTotal(line))}</span>
         </div>
-        {line.modifiers.length > 0 && (
-          <p className="mt-0.5 text-sm text-char-500">{line.modifiers.map((m) => m.optionName).join(", ")}</p>
+        {shownModifiers.length > 0 && (
+          <p className="mt-0.5 text-sm text-char-500">{shownModifiers.map((m) => m.optionName).join(", ")}</p>
         )}
         {line.notes && <p className="mt-0.5 text-xs italic text-char-400">&ldquo;{line.notes}&rdquo;</p>}
 

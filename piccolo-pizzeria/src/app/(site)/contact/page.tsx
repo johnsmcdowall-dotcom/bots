@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InstagramIcon, FacebookIcon } from "@/components/icons/SocialIcons";
 import { getBusinessSettings, getWeeklyHours } from "@/lib/data/business";
 import { DAY_LABELS_FULL, formatHours } from "@/lib/format";
+import { googleMapsEmbedKey, isGoogleMapsConfigured } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Find Us",
@@ -26,18 +27,34 @@ export default async function ContactPage() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <div>
-          <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-char-200 bg-char-100">
-            <iframe
-              title="Map"
-              src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
-              className="h-full w-full border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-          <Button asChild size="lg" className="mt-4 w-full">
+          {isGoogleMapsConfigured ? (
+            <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-char-200 bg-char-100">
+              <iframe
+                title="Map"
+                src={`https://www.google.com/maps/embed/v1/place?key=${googleMapsEmbedKey}&q=${mapsQuery}`}
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          ) : (
+            <div className="texture-grain flex aspect-[4/3] flex-col justify-between rounded-2xl bg-char-900 p-6 text-cream-100 sm:p-8">
+              <div>
+                <MapPin className="h-6 w-6 text-fire-400" />
+                <p className="mt-3 font-display text-2xl uppercase tracking-tight text-cream-50 sm:text-3xl">
+                  {business.addressLine1}
+                </p>
+                <p className="mt-1 text-sm text-cream-100/70">
+                  {business.addressLine2 ? `${business.addressLine2}, ` : ""}
+                  {business.city}, {business.postcode}
+                </p>
+              </div>
+              <p className="text-xs text-cream-100/50">Tap below for directions from wherever you are.</p>
+            </div>
+          )}
+          <Button asChild size="lg" variant="accent" className="mt-4 w-full">
             <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noreferrer">
-              Get Directions
+              Get Directions <ArrowRight className="h-4 w-4" />
             </a>
           </Button>
         </div>

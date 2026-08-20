@@ -26,7 +26,7 @@ export function Header({
     <header className="sticky top-0 z-30 border-b border-cream-100/10 bg-char-900">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Piccolo Pizzeria — home">
-          <LogoWordmark className="h-14 sm:h-16" />
+          <LogoWordmark className="h-14 sm:h-16 lg:h-[4.5rem]" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

@@ -148,7 +148,7 @@ export function ProductModal({
               <Plus className="h-4 w-4" />
             </button>
           </div>
-          <Button size="lg" className="flex-1" disabled={!canAdd} onClick={handleAdd}>
+          <Button size="lg" variant="accent" className="flex-1" disabled={!canAdd} onClick={handleAdd}>
             {product.soldOut ? "Sold Out" : `Add to Order · ${formatMoney(total)}`}
           </Button>
         </div>

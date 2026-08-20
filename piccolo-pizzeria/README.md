@@ -148,6 +148,7 @@ See `.env.example` for the full list with comments. Summary:
 | `STRIPE_SECRET_KEY` | Payments | **Secret** |
 | `STRIPE_WEBHOOK_SECRET` | Payments | **Secret** |
 | `RESEND_API_KEY` | Order emails | Optional — logs to console if unset |
+| `NEXT_PUBLIC_GOOGLE_MAPS_EMBED_KEY` | Live map on Contact page | Public — optional, falls back to a location card if unset |
 | `NEXT_PUBLIC_SITE_URL` | SEO metadata, Stripe redirect | Defaults to `localhost:3000` |
 
 Never commit `.env.local` (it's already git-ignored).

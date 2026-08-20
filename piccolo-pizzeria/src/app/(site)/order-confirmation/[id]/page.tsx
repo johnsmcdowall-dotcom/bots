@@ -9,7 +9,7 @@ import { AutoRefresh } from "@/components/order/AutoRefresh";
 import { ClearBasketOnMount } from "@/components/checkout/ClearBasketOnMount";
 import { getOrderById } from "@/lib/data/orders";
 import { getBusinessSettings } from "@/lib/data/business";
-import { formatMoney, formatOrderDateTime } from "@/lib/format";
+import { formatMoney, formatOrderDateTime, summaryModifiers } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Order Confirmation",
@@ -44,8 +44,9 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
             <PartyPopper className="h-6 w-6 text-basil-600" />
           </div>
           <h1 className="mt-5 text-balance font-display text-3xl uppercase tracking-tight text-char-900 sm:text-4xl">
-            You&apos;re In, {order.customer.firstName}.
+            Order&apos;s In.
           </h1>
+          <p className="mt-1 text-char-600">Thanks, {order.customer.firstName}.</p>
           <p className="mt-2 text-char-500">Order #{order.orderNumber}</p>
         </div>
       )}
@@ -71,8 +72,8 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                 <p className="font-medium text-char-800">
                   {item.quantity}× {item.name}
                 </p>
-                {item.modifiers.length > 0 && (
-                  <p className="text-char-400">{item.modifiers.map((m) => m.optionName).join(", ")}</p>
+                {summaryModifiers(item.modifiers).length > 0 && (
+                  <p className="text-char-400">{summaryModifiers(item.modifiers).map((m) => m.optionName).join(", ")}</p>
                 )}
               </div>
               <span className="shrink-0 text-char-600">{formatMoney(item.lineTotalMinor)}</span>

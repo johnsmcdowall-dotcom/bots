@@ -7,7 +7,7 @@ export function StoryTeaser() {
   return (
     <section className="bg-cream-200/60">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:px-8">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-3xl lg:order-2">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-char-800 lg:order-2">
           <Image
             src="/images/real/trailer-exterior.jpg"
             alt="The Piccolo Pizzeria trailer"

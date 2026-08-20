@@ -117,7 +117,7 @@ export function OrderReview({
 
       <OrderSummary subtotalMinor={subtotal} deliveryNote={method === "delivery" ? "Calculated at checkout" : undefined} />
 
-      <Button size="xl" className="mt-6 w-full" disabled={!canContinue} onClick={() => router.push("/checkout")}>
+      <Button size="xl" variant="accent" className="mt-6 w-full" disabled={!canContinue} onClick={() => router.push("/checkout")}>
         Continue to Checkout <ArrowRight className="h-4 w-4" />
       </Button>
     </div>

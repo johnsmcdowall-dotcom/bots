@@ -52,7 +52,7 @@ function PayButton({ orderId, totalMinor }: { orderId: string; totalMinor: numbe
           <p>{error}</p>
         </div>
       )}
-      <Button size="xl" className="w-full" onClick={handlePay} disabled={!stripe || submitting}>
+      <Button size="xl" variant="accent" className="w-full" onClick={handlePay} disabled={!stripe || submitting}>
         {submitting ? "Processing…" : `Pay ${formatMoney(totalMinor)}`}
       </Button>
       <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-char-400">
