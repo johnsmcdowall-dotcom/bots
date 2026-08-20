@@ -125,7 +125,13 @@ export function calculateOrder(input: PriceCartInput, deps: PricingDeps): Priced
       for (const optionId of selected) {
         const option = group.options.find((o) => o.id === optionId)!;
         lineModifierTotal += option.priceMinor;
-        modifierRecords.push({ groupName: group.name, optionName: option.name, priceMinor: option.priceMinor });
+        modifierRecords.push({
+          groupId: group.id,
+          optionId: option.id,
+          groupName: group.name,
+          optionName: option.name,
+          priceMinor: option.priceMinor,
+        });
       }
     }
 

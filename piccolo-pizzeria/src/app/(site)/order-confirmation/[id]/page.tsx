@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PartyPopper, MapPin, Phone, Clock } from "lucide-react";
@@ -6,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderStatusTracker } from "@/components/order/OrderStatusTracker";
 import { AutoRefresh } from "@/components/order/AutoRefresh";
+import { RecordLastOrder } from "@/components/order/RecordLastOrder";
+import { ReorderButton } from "@/components/order/ReorderSheet";
 import { ClearBasketOnMount } from "@/components/checkout/ClearBasketOnMount";
 import { getOrderById } from "@/lib/data/orders";
 import { getBusinessSettings } from "@/lib/data/business";
@@ -29,6 +30,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16">
       <ClearBasketOnMount />
       <AutoRefresh active={isPending} />
+      {!isPending && <RecordLastOrder id={order.id} orderNumber={order.orderNumber} createdAt={order.createdAt} />}
 
       {isPending ? (
         <div className="text-center">
@@ -126,9 +128,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
             Get Directions
           </a>
         </Button>
-        <Button asChild size="lg" className="flex-1">
-          <Link href="/menu">Order Again</Link>
-        </Button>
+        <ReorderButton orderId={order.id} size="lg" className="flex-1" />
       </div>
     </div>
   );

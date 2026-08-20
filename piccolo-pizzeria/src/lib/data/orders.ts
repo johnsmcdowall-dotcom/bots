@@ -143,6 +143,10 @@ export async function createPendingOrder(input: CreatePendingOrderInput): Promis
     const modifierRows = (insertedItems as { id: string }[]).flatMap((row, idx) =>
       order.items[idx].modifiers.map((mod) => ({
         order_item_id: row.id,
+        // Server-validated in calculateOrder() alongside product_id — see the
+        // comment above for why the id (not just the name) matters.
+        group_id: mod.groupId || null,
+        option_id: mod.optionId || null,
         group_name: mod.groupName,
         option_name: mod.optionName,
         price_minor: mod.priceMinor,
@@ -213,7 +217,13 @@ function mapRowToOrder(row: OrderRow, items: OrderItemRow[], modifiers: OrderIte
       notes: item.notes ?? undefined,
       modifiers: modifiers
         .filter((m) => m.order_item_id === item.id)
-        .map((m) => ({ groupName: m.group_name, optionName: m.option_name, priceMinor: m.price_minor })),
+        .map((m) => ({
+          groupId: m.group_id ?? "",
+          optionId: m.option_id ?? "",
+          groupName: m.group_name,
+          optionName: m.option_name,
+          priceMinor: m.price_minor,
+        })),
     })),
     subtotalMinor: row.subtotal_minor,
     deliveryFeeMinor: row.delivery_fee_minor,

@@ -88,7 +88,9 @@ describe("calculateOrder", () => {
       deps
     );
     expect(result.items[0].unitPriceMinor).toBe(1100);
-    expect(result.items[0].modifiers).toEqual([{ groupName: "Extras", optionName: "Hot Honey", priceMinor: 100 }]);
+    expect(result.items[0].modifiers).toEqual([
+      { groupId: "mg-extras", optionId: "mo-honey", groupName: "Extras", optionName: "Hot Honey", priceMinor: 100 },
+    ]);
   });
 
   it("rejects a sold-out product even if the client still thinks it's available", () => {

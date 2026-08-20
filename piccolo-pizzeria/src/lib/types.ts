@@ -196,6 +196,8 @@ export interface OrderItemRecord {
   lineTotalMinor: number;
   notes?: string;
   modifiers: {
+    groupId: string;
+    optionId: string;
     groupName: string;
     optionName: string;
     priceMinor: number;

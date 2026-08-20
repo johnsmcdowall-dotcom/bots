@@ -202,6 +202,8 @@ export interface OrderItemRow {
 export interface OrderItemModifierRow {
   id: string;
   order_item_id: string;
+  group_id: string | null;
+  option_id: string | null;
   group_name: string;
   option_name: string;
   price_minor: number;
