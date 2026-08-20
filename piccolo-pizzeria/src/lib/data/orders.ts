@@ -125,7 +125,11 @@ export async function createPendingOrder(input: CreatePendingOrderInput): Promis
       .insert(
         order.items.map((item) => ({
           order_id: order.id,
-          product_id: null,
+          // Server-validated in calculateOrder() against the real product
+          // catalogue — never trust a client-supplied id. Falls back to null
+          // only if a product is deleted between pricing and insert (the FK
+          // is ON DELETE SET NULL), which historical orders may already have.
+          product_id: item.productId || null,
           name: item.name,
           unit_price_minor: item.unitPriceMinor,
           quantity: item.quantity,
