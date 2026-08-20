@@ -36,6 +36,7 @@ export interface BusinessSettingsRow {
   ordering_paused_message: string | null;
   announcement_active: boolean;
   announcement_message: string | null;
+  rewards_enabled: boolean;
   asap_orders_enabled: boolean;
   scheduled_orders_enabled: boolean;
   delivery_enabled: boolean;

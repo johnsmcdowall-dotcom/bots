@@ -118,6 +118,8 @@ export interface BusinessSettings {
   orderingPausedMessage?: string;
   announcementActive: boolean;
   announcementMessage?: string;
+  /** Kill switch for the loyalty ledger (see loyalty_accounts/loyalty_transactions). No UI reads this — customer-facing rewards are out of scope. */
+  rewardsEnabled: boolean;
   asapOrdersEnabled: boolean;
   scheduledOrdersEnabled: boolean;
   deliveryEnabled: boolean;

@@ -42,6 +42,7 @@ export async function getBusinessSettings(): Promise<BusinessSettings> {
       orderingPausedMessage: row.ordering_paused_message ?? undefined,
       announcementActive: row.announcement_active,
       announcementMessage: row.announcement_message ?? undefined,
+      rewardsEnabled: row.rewards_enabled,
       asapOrdersEnabled: row.asap_orders_enabled,
       scheduledOrdersEnabled: row.scheduled_orders_enabled,
       deliveryEnabled: row.delivery_enabled,

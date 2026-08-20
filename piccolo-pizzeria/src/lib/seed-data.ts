@@ -39,6 +39,7 @@ export const seedBusinessSettings: BusinessSettings = {
   orderingPausedMessage: "",
   announcementActive: true,
   announcementMessage: "Fresh dough, fired to order — see you tonight.",
+  rewardsEnabled: false,
   asapOrdersEnabled: true,
   scheduledOrdersEnabled: true,
   deliveryEnabled: false,

@@ -27,6 +27,7 @@ export async function updateBusinessSettingsAction(input: Partial<BusinessSettin
   if (input.orderingPausedMessage !== undefined) patch.ordering_paused_message = input.orderingPausedMessage || null;
   if (input.announcementActive !== undefined) patch.announcement_active = input.announcementActive;
   if (input.announcementMessage !== undefined) patch.announcement_message = input.announcementMessage || null;
+  if (input.rewardsEnabled !== undefined) patch.rewards_enabled = input.rewardsEnabled;
   if (input.asapOrdersEnabled !== undefined) patch.asap_orders_enabled = input.asapOrdersEnabled;
   if (input.scheduledOrdersEnabled !== undefined) patch.scheduled_orders_enabled = input.scheduledOrdersEnabled;
   if (input.deliveryEnabled !== undefined) patch.delivery_enabled = input.deliveryEnabled;

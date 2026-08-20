@@ -2,6 +2,7 @@ import "server-only";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { memoryOrders, memoryWebhookEvents } from "@/lib/data/memory-store";
+import { awardLoyaltyPoints } from "@/lib/data/loyalty";
 import { sendOrderReadyEmail } from "@/lib/email";
 import type {
   OrderItemRecord,
@@ -285,8 +286,19 @@ export async function markOrderPaid(orderId: string): Promise<void> {
     }
     return;
   }
-  const { data } = await supabase.from("orders").select("payment_status, promo_code").eq("id", orderId).maybeSingle();
-  const row = data as { payment_status?: string; promo_code?: string | null } | null;
+  const { data } = await supabase
+    .from("orders")
+    .select("payment_status, promo_code, order_number, total_minor, customer_email, customer_phone")
+    .eq("id", orderId)
+    .maybeSingle();
+  const row = data as {
+    payment_status?: string;
+    promo_code?: string | null;
+    order_number: string;
+    total_minor: number;
+    customer_email: string;
+    customer_phone: string;
+  } | null;
   if (row?.payment_status === "paid") return;
 
   await supabase.from("orders").update({ payment_status: "paid", status: "received" }).eq("id", orderId);
@@ -295,6 +307,20 @@ export async function markOrderPaid(orderId: string): Promise<void> {
 
   if (row?.promo_code) {
     await supabase.rpc("increment_promo_usage", { promo_code_input: row.promo_code });
+  }
+
+  // Architecture-only loyalty ledger (Stage 9) — no customer or staff UI
+  // reads this anywhere; the flag just decides whether points quietly
+  // accrue in the background.
+  const { data: settingsRow } = await supabase.from("business_settings").select("rewards_enabled").eq("id", 1).maybeSingle();
+  if (row && (settingsRow as { rewards_enabled?: boolean } | null)?.rewards_enabled) {
+    await awardLoyaltyPoints({
+      customerEmail: row.customer_email,
+      customerPhone: row.customer_phone,
+      orderId,
+      orderNumber: row.order_number,
+      totalMinor: row.total_minor,
+    });
   }
 
   // Decrement limited-stock items only now that payment is confirmed — see

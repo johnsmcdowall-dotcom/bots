@@ -198,6 +198,18 @@ export function BusinessSettingsEditor({ business }: { business: BusinessSetting
         </div>
       </section>
 
+      <section className="rounded-2xl border border-char-200 bg-char-900/[0.02] p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg text-char-900">Loyalty Points (Backend Only)</h2>
+            <p className="text-sm text-char-500">
+              Points quietly accrue per paid order once enabled. There is no customer-facing rewards UI yet — this only turns the ledger on.
+            </p>
+          </div>
+          <Switch checked={form.rewardsEnabled} onCheckedChange={(v) => set("rewardsEnabled", v)} />
+        </div>
+      </section>
+
       <Button size="lg" onClick={save} disabled={isPending}>
         {isPending ? "Saving…" : "Save Settings"}
       </Button>
