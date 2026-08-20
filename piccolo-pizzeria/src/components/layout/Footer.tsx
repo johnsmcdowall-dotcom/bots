@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { InstagramIcon, FacebookIcon } from "@/components/icons/SocialIcons";
 import { LogoMark } from "@/components/brand/LogoMark";
+import { TricolorRule } from "@/components/brand/TricolorRule";
 import type { BusinessSettings, WeeklyHours } from "@/lib/types";
 
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -17,13 +18,14 @@ export function Footer({ business, weeklyHours }: { business: BusinessSettings; 
   const today = new Date().getDay();
 
   return (
-    <footer className="border-t border-char-200 bg-char-900 text-cream-100">
+    <footer className="texture-grain border-t border-cream-100/10 bg-char-900 text-cream-100">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1">
           <div className="w-14">
             <LogoMark />
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-100/70">{business.tagline}</p>
+          <TricolorRule className="mt-5" />
           <div className="mt-5 flex items-center gap-4">
             {business.instagramUrl && (
               <a href={business.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-cream-100/70 hover:text-cream-50">
@@ -39,7 +41,7 @@ export function Footer({ business, weeklyHours }: { business: BusinessSettings; 
         </div>
 
         <div>
-          <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-cream-100/50">Visit</h3>
+          <h3 className="font-display text-sm uppercase tracking-widest text-cream-100/50">Visit</h3>
           <ul className="mt-4 space-y-3 text-sm text-cream-100/80">
             <li className="flex gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-fire-400" />
@@ -64,7 +66,7 @@ export function Footer({ business, weeklyHours }: { business: BusinessSettings; 
         </div>
 
         <div>
-          <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-cream-100/50">Opening Hours</h3>
+          <h3 className="font-display text-sm uppercase tracking-widest text-cream-100/50">Opening Hours</h3>
           <ul className="mt-4 space-y-1.5 text-sm text-cream-100/80">
             {DAY_LABELS.map((label, idx) => {
               const hours = weeklyHours[idx];
@@ -79,7 +81,7 @@ export function Footer({ business, weeklyHours }: { business: BusinessSettings; 
         </div>
 
         <div>
-          <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-cream-100/50">Piccolo</h3>
+          <h3 className="font-display text-sm uppercase tracking-widest text-cream-100/50">Piccolo</h3>
           <ul className="mt-4 space-y-2 text-sm text-cream-100/80">
             <li><Link href="/menu" className="hover:text-cream-50">Menu</Link></li>
             <li><Link href="/order" className="hover:text-cream-50">Order Online</Link></li>

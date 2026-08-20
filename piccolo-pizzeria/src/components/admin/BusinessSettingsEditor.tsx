@@ -31,7 +31,7 @@ export function BusinessSettingsEditor({ business }: { business: BusinessSetting
       <section className="rounded-2xl border border-fire-500/30 bg-fire-500/5 p-5">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-display text-lg font-semibold text-char-900">Pause Ordering</h2>
+            <h2 className="font-display text-lg text-char-900">Pause Ordering</h2>
             <p className="text-sm text-char-500">Immediately stops customers from placing new orders.</p>
           </div>
           <Switch checked={form.orderingPaused} onCheckedChange={(v) => set("orderingPaused", v)} />
@@ -51,7 +51,7 @@ export function BusinessSettingsEditor({ business }: { business: BusinessSetting
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-semibold text-char-900">Order Timing</h2>
+        <h2 className="font-display text-lg text-char-900">Order Timing</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           <div className="flex items-center justify-between rounded-xl border border-char-200 p-4">
             <span className="text-sm font-semibold text-char-800">ASAP orders</span>
@@ -138,7 +138,7 @@ export function BusinessSettingsEditor({ business }: { business: BusinessSetting
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-semibold text-char-900">Business Details</h2>
+        <h2 className="font-display text-lg text-char-900">Business Details</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="name">Business name</Label>

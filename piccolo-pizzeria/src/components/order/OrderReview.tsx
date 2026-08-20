@@ -46,7 +46,7 @@ export function OrderReview({
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-char-900/5">
           <ShoppingBag className="h-7 w-7 text-char-400" />
         </div>
-        <h1 className="mt-6 font-display text-2xl font-semibold text-char-900">Your basket is empty</h1>
+        <h1 className="mt-6 font-display text-2xl uppercase tracking-tight text-char-900">Your basket is empty</h1>
         <p className="mt-2 text-char-500">Add something delicious from the menu to get started.</p>
         <Button asChild size="lg" className="mt-8">
           <Link href="/menu">Browse Menu</Link>
@@ -61,7 +61,7 @@ export function OrderReview({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <h1 className="font-display text-3xl font-semibold text-char-900 sm:text-4xl">Your Order</h1>
+      <h1 className="font-display text-4xl uppercase tracking-tight text-char-900 sm:text-5xl">Your Order</h1>
 
       {business.orderingPaused && (
         <div className="mt-6 flex items-start gap-3 rounded-2xl bg-fire-500/10 p-4 text-sm text-fire-700">
@@ -80,14 +80,14 @@ export function OrderReview({
       </Link>
 
       <section className="mt-8">
-        <h2 className="font-display text-xl font-semibold text-char-900">How would you like it?</h2>
+        <h2 className="font-display text-xl text-char-900">How would you like it?</h2>
         <div className="mt-3">
           <OrderTypeSelector value={method} onChange={setMethod} deliveryEnabled={business.deliveryEnabled} />
         </div>
       </section>
 
       <section className="mt-8">
-        <h2 className="font-display text-xl font-semibold text-char-900">When?</h2>
+        <h2 className="font-display text-xl text-char-900">When?</h2>
         {asapBlocked && (
           <p className="mt-2 flex items-center gap-1.5 text-sm text-fire-600">
             <AlertTriangle className="h-3.5 w-3.5" /> We&apos;re closed right now — choose a time below{business.scheduledOrdersEnabled ? "" : " or check back later"}.
@@ -109,7 +109,7 @@ export function OrderReview({
       </section>
 
       <section className="mt-8">
-        <h2 className="font-display text-xl font-semibold text-char-900">Promo Code</h2>
+        <h2 className="font-display text-xl text-char-900">Promo Code</h2>
         <PromoCodeInput />
       </section>
 

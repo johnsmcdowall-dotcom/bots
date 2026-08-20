@@ -8,8 +8,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-fire-500 text-cream-50 hover:bg-fire-600 active:bg-fire-600 shadow-sm shadow-fire-500/20",
+        // Primary actions (Order Now, Add to Order, Checkout, Pay) — bold
+        // black/cream, matching the logo's ink-on-flour treatment. Burnt-red
+        // is reserved for accents and selected states, not button fills.
+        primary: "bg-char-900 text-cream-50 hover:bg-char-800 active:bg-char-800 shadow-sm shadow-char-900/30",
         dark: "bg-char-900 text-cream-50 hover:bg-char-800",
+        accent: "bg-fire-500 text-cream-50 hover:bg-fire-600 active:bg-fire-600 shadow-sm shadow-fire-500/20",
         outline: "border border-char-300 bg-transparent text-char-900 hover:bg-char-900 hover:text-cream-50 hover:border-char-900",
         ghost: "bg-transparent text-char-900 hover:bg-char-900/5",
         light: "bg-cream-50 text-char-900 hover:bg-cream-200 border border-char-200",

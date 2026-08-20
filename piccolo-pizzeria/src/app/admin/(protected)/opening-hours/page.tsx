@@ -6,7 +6,7 @@ export default async function AdminOpeningHoursPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold text-char-900">Opening Hours</h1>
+      <h1 className="font-display text-3xl text-char-900">Opening Hours</h1>
       <p className="mt-1 text-char-500">Changes apply immediately to the opening status shown to customers.</p>
       <div className="mt-6 max-w-3xl">
         <OpeningHoursEditor weeklyHours={weeklyHours} specialHours={specialHours} />

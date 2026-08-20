@@ -98,7 +98,7 @@ export function ProductModal({
           <SheetHeader>
             <SheetTitle>{product.name}</SheetTitle>
             {product.description && <SheetDescription className="mt-1">{product.description}</SheetDescription>}
-            <p className="mt-2 font-display text-xl font-semibold text-fire-600">{formatMoney(product.priceMinor)}</p>
+            <p className="mt-2 font-display text-xl text-fire-600">{formatMoney(product.priceMinor)}</p>
           </SheetHeader>
 
           <div className="px-5 sm:px-6">
@@ -112,7 +112,7 @@ export function ProductModal({
             ))}
 
             <div className="border-t border-char-200 py-5">
-              <label htmlFor="notes" className="font-display text-base font-semibold text-char-900">
+              <label htmlFor="notes" className="font-display text-base text-char-900">
                 Special Instructions
               </label>
               <Textarea

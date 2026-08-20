@@ -15,7 +15,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
           </div>
           <div className="mt-6 flex items-center justify-center gap-2 text-fire-600">
             <AlertTriangle className="h-5 w-5" />
-            <h1 className="font-display text-xl font-semibold">Supabase not connected</h1>
+            <h1 className="font-display text-xl">Supabase not connected</h1>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-char-600">
             The admin dashboard needs a Supabase project for authentication and to persist orders

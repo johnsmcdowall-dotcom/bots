@@ -55,7 +55,7 @@ export function OrderBoard({ initialOrders }: { initialOrders: OrderRecord[] }) 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-semibold text-char-900">Live Orders</h1>
+        <h1 className="font-display text-3xl text-char-900">Live Orders</h1>
         <button
           onClick={refresh}
           className="flex items-center gap-1.5 rounded-full bg-char-900/5 px-3 py-1.5 text-xs font-semibold text-char-600 hover:bg-char-900/10"

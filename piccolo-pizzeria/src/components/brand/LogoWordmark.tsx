@@ -39,9 +39,8 @@ export function LogoWordmark({
         x="57"
         y="46"
         fill={ink}
-        fontFamily="var(--font-display), serif"
-        fontWeight="600"
-        fontSize="11"
+        fontFamily="var(--font-display), sans-serif"
+        fontSize="12"
         letterSpacing="3"
         opacity="0.85"
       >

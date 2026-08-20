@@ -12,7 +12,7 @@ export function HeaderBasketButton() {
   return (
     <Link
       href="/order"
-      className="relative flex h-11 w-11 items-center justify-center rounded-full text-char-900 hover:bg-char-900/5 md:hidden"
+      className="relative flex h-11 w-11 items-center justify-center rounded-full text-cream-50 hover:bg-cream-50/10 md:hidden"
       aria-label={`Basket, ${mounted ? itemCount : 0} items`}
     >
       <ShoppingBag className="h-5 w-5" />

@@ -114,7 +114,7 @@ export function CheckoutFlow() {
   return (
     <div className="mx-auto grid max-w-5xl gap-10 px-4 py-8 sm:px-6 sm:py-12 lg:grid-cols-[1fr_360px] lg:px-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold text-char-900 sm:text-4xl">Checkout</h1>
+        <h1 className="font-display text-4xl uppercase tracking-tight text-char-900 sm:text-5xl">Checkout</h1>
         <p className="mt-1 text-char-500">
           {method === "delivery" ? "Delivery" : "Collection"} · {requestedLabel}
         </p>
@@ -136,7 +136,7 @@ export function CheckoutFlow() {
       </div>
 
       <aside className="h-fit rounded-2xl border border-char-200 bg-cream-50 p-5 lg:sticky lg:top-28">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-char-900">
+        <h2 className="flex items-center gap-2 font-display text-lg text-char-900">
           <ShoppingBag className="h-4 w-4" /> Order Summary
         </h2>
         <ul className="mt-4 space-y-2 text-sm text-char-600">

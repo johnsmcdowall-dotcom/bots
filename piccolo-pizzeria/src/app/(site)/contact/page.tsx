@@ -26,7 +26,11 @@ export default async function ContactPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <p className="text-xs font-semibold uppercase tracking-widest text-fire-600">Find Us</p>
-      <h1 className="mt-2 font-display text-4xl font-semibold text-char-900 sm:text-5xl">Get in touch</h1>
+      <h1 className="mt-2 font-display text-5xl uppercase tracking-tight text-char-900 sm:text-6xl">Get in Touch</h1>
+      <p className="mt-3 max-w-xl text-char-500">
+        Our regular pitch is the car park at Elm Tree Social Club — order ahead for collection, or
+        follow us on Instagram for one-off pitches elsewhere.
+      </p>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <div>
@@ -48,7 +52,7 @@ export default async function ContactPage() {
 
         <div className="space-y-8">
           <div>
-            <h2 className="font-display text-xl font-semibold text-char-900">Contact</h2>
+            <h2 className="font-display text-xl text-char-900">Contact</h2>
             <ul className="mt-4 space-y-3 text-char-600">
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-fire-500" />
@@ -97,7 +101,7 @@ export default async function ContactPage() {
           </div>
 
           <div>
-            <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-char-900">
+            <h2 className="flex items-center gap-2 font-display text-xl text-char-900">
               <Clock className="h-5 w-5 text-fire-500" /> Opening Hours
             </h2>
             <ul className="mt-4 space-y-2 text-sm">
@@ -114,6 +118,15 @@ export default async function ContactPage() {
                 );
               })}
             </ul>
+          </div>
+
+          <div className="rounded-2xl bg-char-900 p-5 text-cream-100">
+            <h2 className="font-display text-lg text-cream-50">Weddings, Corporate &amp; Festivals</h2>
+            <p className="mt-2 text-sm leading-relaxed text-cream-100/75">
+              We take the oven on the road for private and corporate bookings of any size —
+              weddings, corporate events, festivals, we&apos;ve done them all. Get in touch by
+              phone or email above and we&apos;ll sort the details.
+            </p>
           </div>
         </div>
       </div>

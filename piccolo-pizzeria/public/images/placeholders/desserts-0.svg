@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800"><defs><linearGradient id="de11" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d98a2b"/><stop offset="100%" stop-color="#a8331a"/></linearGradient><filter id="den11"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.045 0"/></filter></defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800"><defs><linearGradient id="de11" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b8862c"/><stop offset="100%" stop-color="#8f2f22"/></linearGradient><filter id="den11"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.045 0"/></filter></defs>
     <rect width="800" height="800" fill="url(#de11)"/>
     <rect width="800" height="800" filter="url(#den11)"/>
-    <circle cx="400" cy="380" r="150" fill="none" stroke="#fdfbf6" stroke-width="3" opacity="0.4"/>
-    <path d="M400 300 a80 80 0 1 1 -56 24" fill="none" stroke="#fdfbf6" stroke-width="3" opacity="0.5" stroke-linecap="round"/></svg>
+    <circle cx="400" cy="380" r="150" fill="none" stroke="#faf5ea" stroke-width="3" opacity="0.4"/>
+    <path d="M400 300 a80 80 0 1 1 -56 24" fill="none" stroke="#faf5ea" stroke-width="3" opacity="0.5" stroke-linecap="round"/></svg>

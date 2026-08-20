@@ -18,7 +18,7 @@ export function BasketItem({ line }: { line: CartLine }) {
 
       <div className="flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-base font-semibold text-char-900">{line.name}</h3>
+          <h3 className="font-display text-base text-char-900">{line.name}</h3>
           <span className="shrink-0 font-semibold text-char-900">{formatMoney(lineTotal(line))}</span>
         </div>
         {line.modifiers.length > 0 && (

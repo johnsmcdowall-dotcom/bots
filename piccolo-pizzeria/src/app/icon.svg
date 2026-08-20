@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="32" fill="#1c1712" />
-  <circle cx="32" cy="32" r="27" fill="none" stroke="#faf5ea" stroke-width="1.4" opacity="0.85" />
-  <g transform="translate(32 20)" stroke="#dd5730" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="32" cy="32" r="32" fill="#0b0b0b" />
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#f2e6cf" stroke-width="1.4" opacity="0.85" />
+  <g transform="translate(32 20)" stroke="#b73a2a" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M-11 15 v-3 a11 11 0 0 1 22 0 v3" />
     <path d="M-11 15 h22" />
     <rect x="-3" y="-9.5" width="6" height="3.4" rx="0.8" />
-    <path d="M-3 15c0-2.6 1.7-3.4 1.7-5.4 0-1.1-.4-2-1.1-2.8 2 .4 3.6 2.2 3.6 4.7 0 1.1-.4 2-1.1 2.8 1.1-.4 2-1.7 2-3.1 1.7 1.1 2.6 2.8 2.6 4.5 0 2.8-2 4.8-5.4 4.8s-3.6-2-3.6-4.8c0-.7.3-1.1.7-1.9 0 1.1 0 1.1.7 1.1" fill="#dd5730" stroke-width="0.8" />
+    <path d="M-3 15c0-2.6 1.7-3.4 1.7-5.4 0-1.1-.4-2-1.1-2.8 2 .4 3.6 2.2 3.6 4.7 0 1.1-.4 2-1.1 2.8 1.1-.4 2-1.7 2-3.1 1.7 1.1 2.6 2.8 2.6 4.5 0 2.8-2 4.8-5.4 4.8s-3.6-2-3.6-4.8c0-.7.3-1.1.7-1.9 0 1.1 0 1.1.7 1.1" fill="#b73a2a" stroke-width="0.8" />
   </g>
 </svg>

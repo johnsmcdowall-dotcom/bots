@@ -59,7 +59,7 @@ function SheetHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 }
 
 function SheetTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof Dialog.Title>) {
-  return <Dialog.Title className={cn("font-display text-2xl font-semibold text-char-900", className)} {...props} />;
+  return <Dialog.Title className={cn("font-display text-2xl uppercase tracking-tight text-char-900", className)} {...props} />;
 }
 
 function SheetDescription({ className, ...props }: React.ComponentPropsWithoutRef<typeof Dialog.Description>) {

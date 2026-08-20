@@ -31,12 +31,12 @@ export function OrderCard({ order }: { order: OrderRecord }) {
     <div className="rounded-2xl border border-char-200 bg-cream-50 p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-display text-lg font-semibold text-char-900">#{order.orderNumber}</p>
+          <p className="font-display text-lg text-char-900">#{order.orderNumber}</p>
           <p className="text-sm text-char-600">
             {order.customer.firstName} {order.customer.lastName}
           </p>
         </div>
-        <span className="shrink-0 font-display text-lg font-semibold text-fire-600">{formatOrderTime(order.requestedTime)}</span>
+        <span className="shrink-0 font-display text-lg text-fire-600">{formatOrderTime(order.requestedTime)}</span>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
@@ -71,7 +71,7 @@ export function OrderCard({ order }: { order: OrderRecord }) {
       {order.notes && <p className="mt-2 rounded-lg bg-ember-400/10 p-2 text-xs text-ember-600">Note: {order.notes}</p>}
 
       <div className="mt-3 flex items-center justify-between border-t border-char-200 pt-3">
-        <span className="font-display text-base font-semibold text-char-900">{formatMoney(order.totalMinor)}</span>
+        <span className="font-display text-base text-char-900">{formatMoney(order.totalMinor)}</span>
         <div className="flex gap-2">
           {canCancel && (
             <Button size="sm" variant="ghost" disabled={isPending} onClick={() => advance("cancelled")} aria-label="Cancel order">

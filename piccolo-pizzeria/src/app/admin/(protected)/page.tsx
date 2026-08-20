@@ -24,7 +24,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold text-char-900">Dashboard</h1>
+      <h1 className="font-display text-3xl text-char-900">Dashboard</h1>
       <p className="mt-1 text-char-500">Today at a glance.</p>
 
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -36,7 +36,7 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8 rounded-2xl border border-char-200 bg-cream-50 p-5">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-char-900">Upcoming Collections</h2>
+          <h2 className="font-display text-lg text-char-900">Upcoming Collections</h2>
           <Link href="/admin/orders" className="flex items-center gap-1 text-sm font-semibold text-fire-600 hover:underline">
             View board <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -56,7 +56,7 @@ export default async function AdminDashboardPage() {
                     {order.method === "delivery" ? "Delivery" : "Collection"} · {order.items.length} item{order.items.length === 1 ? "" : "s"}
                   </p>
                 </div>
-                <span className="font-display text-lg font-semibold text-char-900">{formatOrderTime(order.requestedTime)}</span>
+                <span className="font-display text-lg text-char-900">{formatOrderTime(order.requestedTime)}</span>
               </li>
             ))}
           </ul>

@@ -22,7 +22,7 @@ export function ModifierSelector({
   return (
     <fieldset className="border-t border-char-200 py-5 first:border-t-0 first:pt-0">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <legend className="font-display text-base font-semibold text-char-900">
+        <legend className="font-display text-base text-char-900">
           {group.name}
           {group.required && <span className="ml-1.5 text-fire-600">*</span>}
         </legend>

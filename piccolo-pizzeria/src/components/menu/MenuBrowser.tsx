@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { ProductCardContent } from "@/components/menu/ProductCardContent";
 import { ProductModal } from "@/components/menu/ProductModal";
 import { CategoryNav } from "@/components/menu/CategoryNav";
+import { TricolorRule } from "@/components/brand/TricolorRule";
 import type { Category, ModifierGroup, Product } from "@/lib/types";
 
 export function MenuBrowser({
@@ -52,8 +53,9 @@ export function MenuBrowser({
 
           return (
             <section key={category.id} id={`category-${category.slug}`} className="scroll-mt-36 py-8 first:pt-0">
-              <h2 className="font-display text-2xl font-semibold text-char-900 sm:text-3xl">{category.name}</h2>
-              {category.description && <p className="mt-1 text-char-500">{category.description}</p>}
+              <h2 className="font-display text-3xl uppercase tracking-tight text-char-900 sm:text-4xl">{category.name}</h2>
+              <TricolorRule className="mt-2 h-[3px] w-10" />
+              {category.description && <p className="mt-2 text-char-500">{category.description}</p>}
 
               <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
                 {items.map((product) => (

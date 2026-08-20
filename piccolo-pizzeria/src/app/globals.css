@@ -4,29 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Warm, editorial Neapolitan palette */
-  --color-cream-50: #fdfbf6;
-  --color-cream-100: #faf5ea;
-  --color-cream-200: #f3ead6;
-  --color-cream-300: #e9dabc;
+  /* Piccolo Pizzeria brand palette — sourced from the real logo: deep black,
+     aged flour cream, distressed warm beige, burnt tomato-red accent. */
+  --color-cream-50: #faf5ea; /* off-white */
+  --color-cream-100: #f2e6cf; /* warm cream */
+  --color-cream-200: #d9c5a3; /* muted warm beige */
+  --color-cream-300: #c7ac81; /* deeper beige border */
 
-  --color-char-900: #1c1712;
-  --color-char-800: #241d17;
-  --color-char-700: #332822;
-  --color-char-600: #4a3c33;
+  --color-char-900: #0b0b0b; /* background black */
+  --color-char-800: #151412; /* soft black */
+  --color-char-700: #241f1c;
+  --color-char-600: #3d332c;
   --color-char-500: #6b594c;
   --color-char-400: #8f7b6c;
   --color-char-300: #b6a692;
-  --color-char-200: #d9cebb;
+  --color-char-200: #d9c5a3;
 
-  --color-fire-600: #a8331a;
-  --color-fire-500: #c53f22;
-  --color-fire-400: #dd5730;
-  --color-fire-300: #ea7a4f;
+  --color-fire-600: #8f2f22; /* burnt red, pressed */
+  --color-fire-500: #b73a2a; /* burnt red / tomato — the accent */
+  --color-fire-400: #c9573f;
+  --color-fire-300: #dc7a63;
 
-  --color-ember-500: #d98a2b;
-  --color-ember-400: #e6a13f;
-  --color-ember-300: #f0b962;
+  --color-ember-500: #b8862c;
+  --color-ember-400: #c99a3f;
+  --color-ember-300: #d9b562;
 
   --color-basil-600: #3f4f36;
   --color-basil-500: #566b49;
@@ -65,7 +66,7 @@
   --color-basil-600: var(--color-basil-600);
   --color-basil-500: var(--color-basil-500);
 
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-anton);
   --font-sans: var(--font-manrope);
 
   --radius-sm: 0.5rem;
@@ -122,6 +123,7 @@ body {
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
+    letter-spacing: 0.01em;
   }
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
@@ -135,5 +137,45 @@ body {
   }
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Subtle flour/stone grain — decorative only, kept faint so it never
+     interferes with text contrast. Layer over dark sections, badges and
+     dividers per the brand brief. */
+  .texture-grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .texture-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  /* Signature Piccolo detail lifted from the logo's tricolour bar — use
+     sparingly under headings, in the footer, as a menu divider. */
+  .tricolor-rule {
+    display: flex;
+    height: 4px;
+    width: 3.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+  }
+  .tricolor-rule > span {
+    flex: 1;
+  }
+  .tricolor-rule > span:nth-child(1) {
+    background: var(--color-basil-500);
+  }
+  .tricolor-rule > span:nth-child(2) {
+    background: var(--color-cream-100);
+  }
+  .tricolor-rule > span:nth-child(3) {
+    background: var(--color-fire-500);
   }
 }

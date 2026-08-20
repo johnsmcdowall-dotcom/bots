@@ -35,7 +35,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ember-400/15">
             <Clock className="h-6 w-6 animate-pulse text-ember-500" />
           </div>
-          <h1 className="mt-5 font-display text-2xl font-semibold text-char-900 sm:text-3xl">Confirming your payment…</h1>
+          <h1 className="mt-5 font-display text-2xl text-char-900 sm:text-3xl">Confirming your payment…</h1>
           <p className="mt-2 text-char-500">This usually takes a few seconds. This page will update automatically.</p>
         </div>
       ) : (
@@ -43,7 +43,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-basil-500/15">
             <PartyPopper className="h-6 w-6 text-basil-600" />
           </div>
-          <h1 className="mt-5 text-balance font-display text-2xl font-semibold text-char-900 sm:text-3xl">
+          <h1 className="mt-5 text-balance font-display text-2xl text-char-900 sm:text-3xl">
             Thanks {order.customer.firstName} — we&apos;ve got your order
           </h1>
           <p className="mt-2 text-char-500">Order #{order.orderNumber}</p>
@@ -59,7 +59,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           <span className="text-sm font-semibold uppercase tracking-wide text-char-400">
             {order.method === "delivery" ? "Delivery" : "Collection"}
           </span>
-          <span className="font-display text-lg font-semibold text-char-900">{formatOrderDateTime(order.requestedTime)}</span>
+          <span className="font-display text-lg text-char-900">{formatOrderDateTime(order.requestedTime)}</span>
         </div>
 
         <Separator className="my-6" />
@@ -99,7 +99,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
               <span>-{formatMoney(order.discountMinor)}</span>
             </div>
           )}
-          <div className="flex justify-between pt-2 font-display text-lg font-semibold text-char-900">
+          <div className="flex justify-between pt-2 font-display text-lg text-char-900">
             <span>Total Paid</span>
             <span>{formatMoney(order.totalMinor)}</span>
           </div>

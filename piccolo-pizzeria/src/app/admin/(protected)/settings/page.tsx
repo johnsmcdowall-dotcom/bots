@@ -6,7 +6,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold text-char-900">Settings</h1>
+      <h1 className="font-display text-3xl text-char-900">Settings</h1>
       <p className="mt-1 text-char-500">Control ordering, timing and business details.</p>
       <div className="mt-6 max-w-3xl">
         <BusinessSettingsEditor business={business} />

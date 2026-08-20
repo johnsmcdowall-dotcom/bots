@@ -18,7 +18,7 @@ export function InstagramGallery({ business }: { business: BusinessSettings }) {
   return (
     <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display text-2xl font-semibold text-char-900 sm:text-3xl">From the pass</h2>
+        <h2 className="font-display text-3xl uppercase tracking-tight text-char-900 sm:text-4xl">From the Pass</h2>
         <a
           href={business.instagramUrl}
           target="_blank"

@@ -12,8 +12,8 @@ export function StoryTeaser() {
         </div>
         <div className="lg:order-1">
           <p className="text-xs font-semibold uppercase tracking-widest text-fire-600">Our Story</p>
-          <h2 className="mt-2 max-w-md text-balance font-display text-3xl font-semibold text-char-900 sm:text-4xl">
-            An independent pizza trailer, built around one oven.
+          <h2 className="mt-2 max-w-md text-balance font-display text-4xl uppercase tracking-tight text-char-900 sm:text-5xl">
+            An Independent Pizza Trailer, Built Around One Oven.
           </h2>
           <p className="mt-5 max-w-md leading-relaxed text-char-600">
             Piccolo is a small, independent wood-fired pizza trailer — one oven, hand-stretched

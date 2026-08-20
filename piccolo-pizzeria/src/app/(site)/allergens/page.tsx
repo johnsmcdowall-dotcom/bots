@@ -15,7 +15,7 @@ export default async function AllergensPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <p className="text-xs font-semibold uppercase tracking-widest text-fire-600">Important</p>
-      <h1 className="mt-2 font-display text-4xl font-semibold text-char-900 sm:text-5xl">Allergen Information</h1>
+      <h1 className="mt-2 font-display text-5xl uppercase tracking-tight text-char-900 sm:text-6xl">Allergen Information</h1>
 
       <div className="mt-6 flex items-start gap-3 rounded-2xl bg-fire-500/10 p-5 text-fire-700">
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
@@ -42,7 +42,7 @@ export default async function AllergensPage() {
 
         return (
           <section key={category.id} className="mt-10">
-            <h2 className="font-display text-2xl font-semibold text-char-900">{category.name}</h2>
+            <h2 className="font-display text-2xl text-char-900">{category.name}</h2>
             <div className="mt-4 overflow-x-auto rounded-2xl border border-char-200">
               <table className="w-full min-w-[480px] text-left text-sm">
                 <thead className="bg-cream-200/60 text-xs font-semibold uppercase tracking-wide text-char-500">

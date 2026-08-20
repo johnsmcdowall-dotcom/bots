@@ -31,8 +31,8 @@ export function ProductCardContent({ product, className }: { product: Product; c
 
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-lg font-semibold leading-tight text-char-900">{product.name}</h3>
-          <span className="shrink-0 font-display text-lg font-semibold text-fire-600">{formatMoney(product.priceMinor)}</span>
+          <h3 className="font-display text-lg uppercase leading-tight tracking-tight text-char-900">{product.name}</h3>
+          <span className="shrink-0 font-display text-lg text-fire-600">{formatMoney(product.priceMinor)}</span>
         </div>
         {product.description && <p className="line-clamp-2 text-sm leading-snug text-char-500">{product.description}</p>}
         {product.dietary.length > 0 && (

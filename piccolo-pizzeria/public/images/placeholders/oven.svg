@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="1200" height="1200"><defs>
       <linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#241d17"/>
-        <stop offset="100%" stop-color="#a8331a"/>
+        <stop offset="0%" stop-color="#151412"/>
+        <stop offset="100%" stop-color="#8f2f22"/>
       </linearGradient>
       <filter id="ogn"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/></filter>
     </defs>
     <rect width="1200" height="1200" fill="url(#og)"/>
     <rect width="1200" height="1200" filter="url(#ogn)"/>
-    <path d="M300 950 V620 a300 300 0 0 1 600 0 V950" fill="none" stroke="#fdfbf6" stroke-width="6" opacity="0.55"/>
-    <path d="M230 950 h740" stroke="#fdfbf6" stroke-width="6" opacity="0.55"/>
-    <g stroke="#e6a13f" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M300 950 V620 a300 300 0 0 1 600 0 V950" fill="none" stroke="#faf5ea" stroke-width="6" opacity="0.55"/>
+    <path d="M230 950 h740" stroke="#faf5ea" stroke-width="6" opacity="0.55"/>
+    <g stroke="#c99a3f" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.85">
       <path d="M560 900c0-40 28-52 28-88 0-20-8-34-20-46 34 8 60 42 60 82 0 20-8 34-20 46 20-8 34-28 34-54 26 20 40 48 40 76 0 46-34 76-84 76s-56-30-56-76c0-10 4-16 10-26 0 12 0 12 8 12" />
     </g></svg>

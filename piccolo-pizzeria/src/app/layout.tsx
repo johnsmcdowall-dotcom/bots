@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Manrope, Kaushan_Script } from "next/font/google";
+import { Anton, Manrope, Kaushan_Script } from "next/font/google";
 import { Toaster } from "sonner";
 import { SITE_URL } from "@/lib/config";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const anton = Anton({
+  variable: "--font-anton",
   subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
+  weight: "400",
   display: "swap",
 });
 
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s — Piccolo Pizzeria",
   },
   description:
-    "Proper wood-fired pizza, hand-stretched daily. Independent pizzeria on Teesside serving Stockton-on-Tees, Middlesbrough and beyond. Order online for collection or delivery.",
+    "Proper wood-fired pizza, hand-stretched daily. Independent pizza trailer on Teesside serving Stockton-on-Tees, Middlesbrough and beyond. Order online for collection.",
   keywords: [
     "wood-fired pizza",
     "pizza Stockton-on-Tees",
@@ -45,8 +45,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Piccolo Pizzeria",
     title: "Piccolo Pizzeria — Wood-Fired Pizza, North East England",
-    description:
-      "Proper wood-fired pizza, hand-stretched daily. Order online for collection or delivery.",
+    description: "Proper wood-fired pizza, hand-stretched daily. Order online for collection.",
     url: SITE_URL,
     locale: "en_GB",
   },
@@ -62,7 +61,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1c1712",
+  themeColor: "#0b0b0b",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -72,7 +71,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-GB"
-      className={`${fraunces.variable} ${manrope.variable} ${kaushan.variable} h-full antialiased`}
+      className={`${anton.variable} ${manrope.variable} ${kaushan.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream-100 font-sans text-char-900">
         {children}

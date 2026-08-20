@@ -15,7 +15,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-fire-500/10">
         <AlertTriangle className="h-6 w-6 text-fire-600" />
       </div>
-      <h1 className="mt-6 font-display text-3xl font-semibold text-char-900">Something went wrong</h1>
+      <h1 className="mt-6 font-display text-4xl uppercase tracking-tight text-char-900">Something Went Wrong</h1>
       <p className="mt-2 text-char-500">
         Sorry about that — an unexpected error occurred. Please try again, or head back to the
         menu.

@@ -49,7 +49,7 @@ export function CheckoutForm({
       )}
 
       <div>
-        <h2 className="font-display text-lg font-semibold text-char-900">Your Details</h2>
+        <h2 className="font-display text-lg text-char-900">Your Details</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
             <Label htmlFor="firstName">First name</Label>
@@ -76,7 +76,7 @@ export function CheckoutForm({
 
       {method === "delivery" && (
         <div>
-          <h2 className="font-display text-lg font-semibold text-char-900">Delivery Address</h2>
+          <h2 className="font-display text-lg text-char-900">Delivery Address</h2>
           <div className="mt-3 space-y-3">
             <div>
               <Label htmlFor="addressLine1">Address</Label>

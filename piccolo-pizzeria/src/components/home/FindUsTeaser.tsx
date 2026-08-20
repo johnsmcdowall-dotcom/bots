@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, Clock, Phone, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TricolorRule } from "@/components/brand/TricolorRule";
 import type { BusinessSettings, WeeklyHours } from "@/lib/types";
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -18,10 +19,11 @@ export function FindUsTeaser({ business, weeklyHours }: { business: BusinessSett
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-      <div className="grid gap-8 rounded-3xl bg-char-900 p-6 text-cream-50 sm:p-10 lg:grid-cols-2 lg:gap-16 lg:p-14">
+      <div className="texture-grain grid gap-8 rounded-3xl bg-char-900 p-6 text-cream-50 sm:p-10 lg:grid-cols-2 lg:gap-16 lg:p-14">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-fire-400">Find Us</p>
-          <h2 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">{business.city}</h2>
+          <h2 className="mt-2 font-display text-4xl uppercase tracking-tight sm:text-5xl">{business.city}</h2>
+          <TricolorRule className="mt-4" />
 
           <div className="mt-6 space-y-4 text-cream-100/85">
             <p className="flex gap-3">
@@ -39,7 +41,7 @@ export function FindUsTeaser({ business, weeklyHours }: { business: BusinessSett
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg">
+            <Button asChild size="lg" variant="accent">
               <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noreferrer">
                 Get Directions <ArrowRight className="h-4 w-4" />
               </a>

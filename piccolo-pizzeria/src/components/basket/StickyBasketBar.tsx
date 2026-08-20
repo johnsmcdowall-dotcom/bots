@@ -40,7 +40,7 @@ export function StickyBasketBar() {
           </span>
           View Basket
         </span>
-        <span className="font-display text-lg font-semibold">{formatMoney(subtotal)}</span>
+        <span className="font-display text-lg">{formatMoney(subtotal)}</span>
       </Link>
     </div>
   );

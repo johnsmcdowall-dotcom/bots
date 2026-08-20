@@ -74,9 +74,9 @@ export function PaymentSection({ clientSecret, orderId, totalMinor }: { clientSe
         appearance: {
           theme: "stripe",
           variables: {
-            colorPrimary: "#c53f22",
-            colorBackground: "#fdfbf6",
-            colorText: "#1c1712",
+            colorPrimary: "#b73a2a",
+            colorBackground: "#faf5ea",
+            colorText: "#0b0b0b",
             fontFamily: "var(--font-sans), sans-serif",
             borderRadius: "12px",
           },

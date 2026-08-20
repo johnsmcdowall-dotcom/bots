@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
         <div className="mx-auto w-14">
           <LogoMark />
         </div>
-        <h1 className="mt-6 text-center font-display text-2xl font-semibold text-char-900">Admin Sign In</h1>
+        <h1 className="mt-6 text-center font-display text-2xl text-char-900">Admin Sign In</h1>
         <p className="mt-1 text-center text-sm text-char-500">Staff &amp; admin access only</p>
         <div className="mt-6">
           <Suspense>

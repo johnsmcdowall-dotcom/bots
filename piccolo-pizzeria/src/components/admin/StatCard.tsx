@@ -28,7 +28,7 @@ export function StatCard({
           <Icon className="h-4 w-4" />
         </div>
       </div>
-      <p className="mt-3 font-display text-3xl font-semibold text-char-900">{value}</p>
+      <p className="mt-3 font-display text-3xl text-char-900">{value}</p>
     </div>
   );
 }

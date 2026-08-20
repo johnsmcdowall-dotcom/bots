@@ -34,12 +34,12 @@ export function Hero({
           className="mb-6 w-fit bg-cream-50/10 text-cream-50 backdrop-blur-sm"
         />
 
-        <h1 className="max-w-2xl text-balance font-display text-5xl font-semibold leading-[1.05] text-cream-50 sm:text-6xl lg:text-7xl animate-fade-up">
-          Wood-fired.
+        <h1 className="max-w-2xl text-balance font-display text-6xl uppercase leading-[0.95] tracking-tight text-cream-50 sm:text-7xl lg:text-8xl animate-fade-up">
+          Proper
           <br />
-          Hand-stretched.
+          Wood-Fired
           <br />
-          <span className="text-fire-400">Piccolo.</span>
+          <span className="text-fire-400">Pizza.</span>
         </h1>
 
         <p className="mt-6 max-w-md text-balance text-lg leading-relaxed text-cream-100/80 animate-fade-up [animation-delay:100ms]">
@@ -48,9 +48,9 @@ export function Hero({
         </p>
 
         <div className="mt-9 flex flex-col gap-3 sm:flex-row animate-fade-up [animation-delay:200ms]">
-          <Button asChild size="xl">
+          <Button asChild size="xl" variant="accent">
             <Link href="/order">
-              Order Now
+              Order Online
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

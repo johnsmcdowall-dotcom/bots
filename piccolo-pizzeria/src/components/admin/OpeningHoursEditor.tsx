@@ -62,7 +62,7 @@ export function OpeningHoursEditor({
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="font-display text-lg font-semibold text-char-900">Weekly Hours</h2>
+        <h2 className="font-display text-lg text-char-900">Weekly Hours</h2>
         <div className="mt-3 space-y-2">
           {DAY_LABELS.map((label, day) => {
             const d = hours[day];
@@ -99,7 +99,7 @@ export function OpeningHoursEditor({
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-semibold text-char-900">Special Dates &amp; Holidays</h2>
+        <h2 className="font-display text-lg text-char-900">Special Dates &amp; Holidays</h2>
         <p className="mt-1 text-sm text-char-500">Override the weekly schedule for a specific date — closures, holidays or special opening times.</p>
 
         <div className="mt-4 space-y-2">

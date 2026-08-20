@@ -50,7 +50,7 @@ export function MenuEditor({ categories, products }: { categories: Category[]; p
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-semibold text-char-900">Menu</h1>
+        <h1 className="font-display text-3xl text-char-900">Menu</h1>
         <Button
           onClick={() => {
             setEditing(null);
@@ -67,7 +67,7 @@ export function MenuEditor({ categories, products }: { categories: Category[]; p
 
         return (
           <section key={category.id} className="mt-8">
-            <h2 className="font-display text-lg font-semibold text-char-900">{category.name}</h2>
+            <h2 className="font-display text-lg text-char-900">{category.name}</h2>
             <div className="mt-3 divide-y divide-char-200 rounded-2xl border border-char-200 bg-cream-50">
               {categoryItems.map((product) => (
                 <div key={product.id} className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">

@@ -38,7 +38,7 @@ export function OrderSummary({
           <span>-{formatMoney(discountMinor)}</span>
         </div>
       )}
-      <div className="flex justify-between border-t border-char-200 pt-2 font-display text-lg font-semibold text-char-900">
+      <div className="flex justify-between border-t border-char-200 pt-2 font-display text-lg text-char-900">
         <span>Total</span>
         <span>{formatMoney(total)}</span>
       </div>

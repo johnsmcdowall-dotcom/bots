@@ -16,8 +16,8 @@ export default function OurStoryPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-char-900 via-char-900/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-4xl px-4 pb-10 sm:px-6 lg:px-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-fire-400">Our Story</p>
-          <h1 className="mt-2 text-balance font-display text-4xl font-semibold text-cream-50 sm:text-5xl">
-            One oven. One idea done properly.
+          <h1 className="mt-2 text-balance font-display text-5xl uppercase tracking-tight text-cream-50 sm:text-6xl">
+            One Oven. One Idea Done Properly.
           </h1>
         </div>
       </div>
@@ -36,9 +36,18 @@ export default function OurStoryPage() {
             averagely.
           </p>
           <p>
-            You&apos;ll find us out and about across the North East — at social clubs, events and
-            our regular pitches. Follow us on Instagram for where we&apos;ll be next, or order
-            ahead for collection when we&apos;re parked up.
+            You&apos;ll find our regular pitch in the car park at Elm Tree Social Club — follow us
+            on Instagram for exact days and any one-off pitches, or order ahead for collection
+            when we&apos;re parked up.
+          </p>
+          <p>
+            We also take the oven on the road for private and corporate bookings — weddings,
+            corporate events, festivals, we&apos;ve done them all. If you&apos;d like Piccolo at
+            your event,{" "}
+            <Link href="/contact" className="font-semibold text-fire-600 underline underline-offset-2">
+              get in touch
+            </Link>{" "}
+            and we&apos;ll sort the details.
           </p>
         </div>
 

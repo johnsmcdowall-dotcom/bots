@@ -66,9 +66,8 @@ export function LogoMark({
         y="164"
         textAnchor="middle"
         fill={ink}
-        fontFamily="var(--font-display), serif"
-        fontWeight="600"
-        fontSize="18"
+        fontFamily="var(--font-display), sans-serif"
+        fontSize="19"
         letterSpacing="4"
       >
         PIZZERIA

@@ -12,7 +12,7 @@ export function FeaturedMenu({ products }: { products: Product[] }) {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-fire-600">From the oven</p>
-          <h2 className="mt-2 font-display text-3xl font-semibold text-char-900 sm:text-4xl">Crowd favourites</h2>
+          <h2 className="mt-2 font-display text-4xl uppercase tracking-tight text-char-900 sm:text-5xl">Crowd Favourites</h2>
         </div>
         <Link href="/menu" className="hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-char-700 hover:text-fire-600 sm:flex">
           Full menu <ArrowRight className="h-4 w-4" />
