@@ -1,3 +1,4 @@
+import { addDaysToISODate, dayOfWeekForISODate, formatShortDateLabel, londonDateISO, londonMinutesOfDay } from "./timezone";
 import type { OrderMethod, TimeSlot, WeeklyHours, SpecialHours, BusinessSettings } from "./types";
 
 function toMinutes(hhmm: string): number {
@@ -11,19 +12,13 @@ function toHHMM(mins: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-function isoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
 export function dayHoursFor(dateISO: string, weeklyHours: WeeklyHours, specialHours: SpecialHours[]) {
   const special = specialHours.find((s) => s.date === dateISO);
   if (special) {
     if (!special.isOpen) return null;
     return { openTime: special.openTime || "00:00", closeTime: special.closeTime || "23:59" };
   }
-  const [y, m, d] = dateISO.split("-").map(Number);
-  const date = new Date(Date.UTC(y, m - 1, d, 12));
-  const hours = weeklyHours[date.getUTCDay()];
+  const hours = weeklyHours[dayOfWeekForISODate(dateISO)];
   if (!hours?.isOpen) return null;
   return { openTime: hours.openTime, closeTime: hours.closeTime };
 }
@@ -39,13 +34,11 @@ export function getOrderableDates(
   now: Date = new Date()
 ): { dateISO: string; label: string }[] {
   const out: { dateISO: string; label: string }[] = [];
+  const nowISO = londonDateISO(now);
   for (let i = 0; i <= business.maxAdvanceOrderDays; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() + i);
-    const dateISO = isoDate(d);
+    const dateISO = addDaysToISODate(nowISO, i);
     if (!dayHoursFor(dateISO, weeklyHours, specialHours)) continue;
-    const label =
-      i === 0 ? "Today" : i === 1 ? "Tomorrow" : d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    const label = i === 0 ? "Today" : i === 1 ? "Tomorrow" : formatShortDateLabel(dateISO);
     out.push({ dateISO, label });
   }
   return out;
@@ -78,9 +71,9 @@ export function generateSlots(params: GenerateSlotsParams): TimeSlot[] {
 
   const capacity = method === "delivery" ? business.deliveryOrdersPerSlot : business.ordersPerSlot;
   const interval = business.slotIntervalMinutes;
-  const isToday = isoDate(now) === dateISO;
+  const isToday = londonDateISO(now) === dateISO;
   const earliestMins = isToday
-    ? Math.ceil((now.getHours() * 60 + now.getMinutes() + business.minPrepMinutes + business.currentWaitMinutes / 3) / interval) * interval
+    ? Math.ceil((londonMinutesOfDay(now) + business.minPrepMinutes + business.currentWaitMinutes / 3) / interval) * interval
     : toMinutes(hours.openTime);
 
   const openMins = toMinutes(hours.openTime);

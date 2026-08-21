@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { memoryOrders, memoryWebhookEvents } from "@/lib/data/memory-store";
 import { awardLoyaltyPoints } from "@/lib/data/loyalty";
 import { sendOrderReadyEmail } from "@/lib/email";
+import { addDaysToISODate, londonHHMM, londonWallTimeToUTC } from "@/lib/timezone";
 import type {
   OrderItemRecord,
   OrderMethod,
@@ -34,32 +35,38 @@ async function broadcastOrderStatus(supabase: NonNullable<ReturnType<typeof getS
 
 export async function getBookedCounts(dateISO: string, method: OrderMethod): Promise<Record<string, number>> {
   try {
+    // The slot labels this gets compared against (lib/slots.ts) are London
+    // wall-clock "HH:mm" for a London calendar day — so both the day
+    // boundary and the per-order time must be read in Europe/London too,
+    // not UTC, or capacity checking silently stops matching real slots
+    // whenever BST is in effect.
+    const dayStart = londonWallTimeToUTC(dateISO, "00:00").toISOString();
+    const dayEnd = londonWallTimeToUTC(addDaysToISODate(dateISO, 1), "00:00").toISOString();
+
     const supabase = await getSupabaseServerClient();
     if (!supabase) {
       const counts: Record<string, number> = {};
       for (const order of memoryOrders.values()) {
         if (order.method !== method || order.status === "cancelled") continue;
-        if (!order.requestedTime.startsWith(dateISO)) continue;
-        const time = new Date(order.requestedTime).toISOString().slice(11, 16);
+        if (order.requestedTime < dayStart || order.requestedTime >= dayEnd) continue;
+        const time = londonHHMM(new Date(order.requestedTime));
         counts[time] = (counts[time] ?? 0) + 1;
       }
       return counts;
     }
 
-    const start = `${dateISO}T00:00:00.000Z`;
-    const end = `${dateISO}T23:59:59.999Z`;
     const { data, error } = await supabase
       .from("orders")
       .select("requested_time")
       .eq("method", method)
       .neq("status", "cancelled")
-      .gte("requested_time", start)
-      .lte("requested_time", end);
+      .gte("requested_time", dayStart)
+      .lt("requested_time", dayEnd);
     if (error || !data) return {};
 
     const counts: Record<string, number> = {};
     for (const row of data as { requested_time: string }[]) {
-      const time = new Date(row.requested_time).toISOString().slice(11, 16);
+      const time = londonHHMM(new Date(row.requested_time));
       counts[time] = (counts[time] ?? 0) + 1;
     }
     return counts;
@@ -275,37 +282,54 @@ export async function getOrderByPaymentIntentId(paymentIntentId: string): Promis
   return loadOrderFromSupabase(supabase, (data as { id: string }).id);
 }
 
-/** Marks an order paid + received. Idempotent — safe to call twice for the same order. */
-export async function markOrderPaid(orderId: string): Promise<void> {
+/**
+ * Marks an order paid + received. Idempotent — safe to call twice for the
+ * same order, including two calls racing concurrently (Stripe explicitly
+ * does not guarantee webhook delivery is exactly-once or ordered). The
+ * update itself is the atomic claim: `.neq("payment_status", "paid")` means
+ * only the first request to reach Postgres actually flips the row and gets
+ * a result back — a second, truly concurrent request (not just a later
+ * retry that would already be caught by the webhook_events ledger) sees
+ * zero rows matched and returns immediately, before ever touching stock,
+ * promo usage, loyalty points or the receipt email. A plain "read status,
+ * then write" here would not be safe: two requests could both read
+ * "not yet paid" before either had written, and both would proceed.
+ *
+ * Returns whether *this* call was the one that performed the transition —
+ * callers use that to decide whether to send the receipt email, so a
+ * losing concurrent call never sends a duplicate.
+ */
+export async function markOrderPaid(orderId: string): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     const order = memoryOrders.get(orderId);
-    if (order && order.paymentStatus !== "paid") {
-      order.paymentStatus = "paid";
-      order.status = "received";
-    }
-    return;
+    if (!order || order.paymentStatus === "paid") return false;
+    order.paymentStatus = "paid";
+    order.status = "received";
+    return true;
   }
-  const { data } = await supabase
+
+  const { data: updated } = await supabase
     .from("orders")
-    .select("payment_status, promo_code, order_number, total_minor, customer_email, customer_phone")
+    .update({ payment_status: "paid", status: "received" })
     .eq("id", orderId)
+    .neq("payment_status", "paid")
+    .select("promo_code, order_number, total_minor, customer_email, customer_phone")
     .maybeSingle();
-  const row = data as {
-    payment_status?: string;
+  if (!updated) return false;
+
+  const row = updated as {
     promo_code?: string | null;
     order_number: string;
     total_minor: number;
     customer_email: string;
     customer_phone: string;
-  } | null;
-  if (row?.payment_status === "paid") return;
+  };
 
-  await supabase.from("orders").update({ payment_status: "paid", status: "received" }).eq("id", orderId);
   await supabase.from("order_status_history").insert({ order_id: orderId, status: "received", changed_by: "stripe_webhook" });
   await broadcastOrderStatus(supabase, orderId, "received");
 
-  if (row?.promo_code) {
+  if (row.promo_code) {
     await supabase.rpc("increment_promo_usage", { promo_code_input: row.promo_code });
   }
 
@@ -313,7 +337,7 @@ export async function markOrderPaid(orderId: string): Promise<void> {
   // reads this anywhere; the flag just decides whether points quietly
   // accrue in the background.
   const { data: settingsRow } = await supabase.from("business_settings").select("rewards_enabled").eq("id", 1).maybeSingle();
-  if (row && (settingsRow as { rewards_enabled?: boolean } | null)?.rewards_enabled) {
+  if ((settingsRow as { rewards_enabled?: boolean } | null)?.rewards_enabled) {
     await awardLoyaltyPoints({
       customerEmail: row.customer_email,
       customerPhone: row.customer_phone,
@@ -351,6 +375,8 @@ export async function markOrderPaid(orderId: string): Promise<void> {
     const flag = `⚠ Stock conflict: ${oversoldNames.join(", ")} may be oversold — please verify before preparing.`;
     await supabase.from("orders").update({ notes: existingNotes ? `${existingNotes}\n${flag}` : flag }).eq("id", orderId);
   }
+
+  return true;
 }
 
 export async function markOrderPaymentFailed(orderId: string): Promise<void> {
@@ -369,28 +395,44 @@ export async function markOrderPaymentFailed(orderId: string): Promise<void> {
   await supabase.from("orders").update({ payment_status: "failed" }).eq("id", orderId);
 }
 
+/**
+ * Same atomic-claim shape as markOrderPaid, and for the same reason: a
+ * plain "read current status, then write" would let two racing calls (a
+ * fast double-click on Cancel, a replayed admin action, two staff tabs)
+ * both see the old status and both proceed — for "cancelled" that would
+ * release stock twice, and for "ready" it would send the email twice. The
+ * `.neq("status", status)` update only actually matches a row for the
+ * request that genuinely changes something; a second, racing call to set
+ * the same status again matches nothing and returns immediately.
+ */
 export async function updateOrderStatus(orderId: string, status: OrderStatus, changedBy = "admin"): Promise<void> {
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     const order = memoryOrders.get(orderId);
-    if (!order) return;
-    const previousStatus = order.status;
+    if (!order || order.status === status) return;
     order.status = status;
-    // No live Realtime broadcast in memory-store mode (no Supabase to send
-    // through), but the ready-email dedup rule still applies.
-    if (status === "ready" && previousStatus !== "ready") await sendOrderReadyEmail(order);
+    // No live Realtime broadcast in memory-store mode (no Supabase to send through).
+    if (status === "ready") await sendOrderReadyEmail(order);
     return;
   }
 
-  const { data: existing } = await supabase.from("orders").select("status, payment_status").eq("id", orderId).maybeSingle();
-  const existingRow = existing as { status?: string; payment_status?: string } | null;
-  const previousStatus = existingRow?.status;
+  const { data: updated } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", orderId)
+    .neq("status", status)
+    .select("payment_status")
+    .maybeSingle();
+  if (!updated) return;
+
+  await supabase.from("order_status_history").insert({ order_id: orderId, status, changed_by: changedBy });
+  await broadcastOrderStatus(supabase, orderId, status);
 
   // A *paid* order being cancelled after the fact (staff-initiated) should
   // give any limited-stock items it consumed back — this is the one case
   // where stock is released, distinct from failed/abandoned payments,
   // which never decremented anything in the first place.
-  if (status === "cancelled" && existingRow?.payment_status === "paid") {
+  if (status === "cancelled" && (updated as { payment_status?: string }).payment_status === "paid") {
     const { data: itemsData } = await supabase.from("order_items").select("product_id, quantity").eq("order_id", orderId);
     const items = (itemsData ?? []) as { product_id: string | null; quantity: number }[];
     await Promise.all(
@@ -400,13 +442,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus, ch
     );
   }
 
-  await supabase.from("orders").update({ status }).eq("id", orderId);
-  await supabase.from("order_status_history").insert({ order_id: orderId, status, changed_by: changedBy });
-  await broadcastOrderStatus(supabase, orderId, status);
-
-  // Only on the transition *into* ready — re-saving the same status (a
-  // retried admin action, or toggling away and back) never re-sends it.
-  if (status === "ready" && previousStatus !== "ready") {
+  if (status === "ready") {
     const order = await loadOrderFromSupabase(supabase, orderId);
     if (order) await sendOrderReadyEmail(order);
   }

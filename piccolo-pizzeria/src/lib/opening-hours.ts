@@ -1,3 +1,4 @@
+import { addDaysToISODate, dayOfWeekForISODate, londonDateISO, londonDayOfWeek, londonMinutesOfDay } from "./timezone";
 import type { BusinessSettings, DayHours, OpeningStatus, SpecialHours, WeeklyHours } from "./types";
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -5,14 +6,6 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 function toMinutes(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
   return h * 60 + m;
-}
-
-function minutesOfDay(date: Date): number {
-  return date.getHours() * 60 + date.getMinutes();
-}
-
-function isoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
 }
 
 function formatTime(hhmm: string): string {
@@ -42,7 +35,7 @@ export function computeOpeningStatus(
     };
   }
 
-  const today = isoDate(now);
+  const today = londonDateISO(now);
   const special = specialHours.find((s) => s.date === today);
 
   let todayHours: DayHours;
@@ -61,7 +54,7 @@ export function computeOpeningStatus(
       closeTime: special.closeTime || "23:59",
     };
   } else {
-    todayHours = weeklyHours[now.getDay()];
+    todayHours = weeklyHours[londonDayOfWeek(now)];
   }
 
   if (!todayHours?.isOpen) {
@@ -74,7 +67,7 @@ export function computeOpeningStatus(
     };
   }
 
-  const nowMins = minutesOfDay(now);
+  const nowMins = londonMinutesOfDay(now);
   const openMins = toMinutes(todayHours.openTime);
   const closeMins = toMinutes(todayHours.closeTime);
 
@@ -106,20 +99,20 @@ export function computeOpeningStatus(
 }
 
 function findNextOpen(weeklyHours: WeeklyHours, specialHours: SpecialHours[], from: Date): string {
+  const fromISO = londonDateISO(from);
   for (let i = 1; i <= 7; i++) {
-    const d = new Date(from);
-    d.setDate(d.getDate() + i);
-    const iso = isoDate(d);
+    const iso = addDaysToISODate(fromISO, i);
+    const dow = dayOfWeekForISODate(iso);
     const special = specialHours.find((s) => s.date === iso);
     if (special) {
       if (special.isOpen && special.openTime) {
-        return `Opens ${i === 1 ? "tomorrow" : DAY_NAMES[d.getDay()]} at ${formatTime(special.openTime)}`;
+        return `Opens ${i === 1 ? "tomorrow" : DAY_NAMES[dow]} at ${formatTime(special.openTime)}`;
       }
       continue;
     }
-    const hours = weeklyHours[d.getDay()];
+    const hours = weeklyHours[dow];
     if (hours?.isOpen) {
-      return `Opens ${i === 1 ? "tomorrow" : DAY_NAMES[d.getDay()]} at ${formatTime(hours.openTime)}`;
+      return `Opens ${i === 1 ? "tomorrow" : DAY_NAMES[dow]} at ${formatTime(hours.openTime)}`;
     }
   }
   return "Check back soon";

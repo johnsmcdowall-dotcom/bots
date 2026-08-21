@@ -9,6 +9,7 @@ import { generateSlots } from "@/lib/slots";
 import { getStripeClient } from "@/lib/stripe";
 import { isStripeConfigured } from "@/lib/config";
 import { sendOrderReceivedEmail } from "@/lib/email";
+import { londonWallTimeToUTC } from "@/lib/timezone";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -50,7 +51,11 @@ export async function POST(request: NextRequest) {
     }
     const dateISO = input.scheduledDate!;
     const time = input.scheduledTime!;
-    requestedTime = new Date(`${dateISO}T${time}:00`);
+    // The slot picker's "18:00" always means 6pm in the business's own
+    // timezone (Europe/London) — never the server's. A plain `new Date(...)`
+    // on a string with no offset is parsed in the server's local time,
+    // which is wrong by an hour whenever BST is in effect on a UTC host.
+    requestedTime = londonWallTimeToUTC(dateISO, time);
 
     const bookedCounts = await getBookedCounts(dateISO, input.method);
     const slots = generateSlots({ dateISO, method: input.method, weeklyHours, specialHours, business, bookedCounts });

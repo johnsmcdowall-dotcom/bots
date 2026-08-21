@@ -4,10 +4,11 @@ import { InstagramIcon, FacebookIcon } from "@/components/icons/SocialIcons";
 import { LogoMark } from "@/components/brand/LogoMark";
 import { TricolorRule } from "@/components/brand/TricolorRule";
 import { DAY_LABELS_FULL, formatHours } from "@/lib/format";
+import { londonDayOfWeek } from "@/lib/timezone";
 import type { BusinessSettings, WeeklyHours } from "@/lib/types";
 
 export function Footer({ business, weeklyHours }: { business: BusinessSettings; weeklyHours: WeeklyHours }) {
-  const today = new Date().getDay();
+  const today = londonDayOfWeek();
 
   return (
     <footer className="texture-grain border-t border-cream-100/10 bg-char-900 text-cream-100">

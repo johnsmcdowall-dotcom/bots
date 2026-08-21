@@ -3,10 +3,11 @@ import { MapPin, Clock, Phone, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TricolorRule } from "@/components/brand/TricolorRule";
 import { DAY_LABELS_SHORT, formatHours } from "@/lib/format";
+import { londonDayOfWeek } from "@/lib/timezone";
 import type { BusinessSettings, WeeklyHours } from "@/lib/types";
 
 export function FindUsTeaser({ business, weeklyHours }: { business: BusinessSettings; weeklyHours: WeeklyHours }) {
-  const today = new Date().getDay();
+  const today = londonDayOfWeek();
   const mapsQuery = encodeURIComponent(`${business.addressLine1}, ${business.city}, ${business.postcode}`);
 
   return (

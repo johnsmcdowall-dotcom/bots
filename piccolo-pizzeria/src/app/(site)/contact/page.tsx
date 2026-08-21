@@ -5,6 +5,7 @@ import { InstagramIcon, FacebookIcon } from "@/components/icons/SocialIcons";
 import { getBusinessSettings, getWeeklyHours } from "@/lib/data/business";
 import { DAY_LABELS_FULL, formatHours } from "@/lib/format";
 import { googleMapsEmbedKey, isGoogleMapsConfigured } from "@/lib/config";
+import { londonDayOfWeek } from "@/lib/timezone";
 
 export const metadata: Metadata = {
   title: "Find Us",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
   const [business, weeklyHours] = await Promise.all([getBusinessSettings(), getWeeklyHours()]);
-  const today = new Date().getDay();
+  const today = londonDayOfWeek();
   const mapsQuery = encodeURIComponent(`${business.addressLine1}, ${business.city}, ${business.postcode}`);
 
   return (

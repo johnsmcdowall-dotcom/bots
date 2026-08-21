@@ -2,8 +2,13 @@ export function formatMoney(minor: number): string {
   return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(minor / 100);
 }
 
+// Explicit timeZone below is deliberate, not decorative: this app's server
+// (and some viewers' browsers) may not run in the UK, but every order time
+// is always meant in the business's own local time — Europe/London.
+// Omitting it would render an hour wrong for roughly seven months of the
+// year, whenever British Summer Time is in effect.
 export function formatOrderTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit" });
+  return new Date(iso).toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit", timeZone: "Europe/London" });
 }
 
 export function formatOrderDateTime(iso: string): string {
@@ -13,6 +18,7 @@ export function formatOrderDateTime(iso: string): string {
     month: "short",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: "Europe/London",
   });
 }
 

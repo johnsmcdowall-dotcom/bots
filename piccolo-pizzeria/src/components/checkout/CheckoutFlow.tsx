@@ -11,6 +11,7 @@ import { OrderSummary } from "@/components/order/OrderSummary";
 import { useBasketStore } from "@/store/basket-store";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { formatOrderDateTime } from "@/lib/format";
+import { londonWallTimeToUTC } from "@/lib/timezone";
 import type { CheckoutFormValues } from "@/lib/validations/checkout";
 
 interface CheckoutResult {
@@ -109,7 +110,11 @@ export function CheckoutFlow() {
   }
 
   const requestedLabel =
-    timing === "asap" ? "As soon as possible" : scheduledDate && scheduledTime ? formatOrderDateTime(`${scheduledDate}T${scheduledTime}:00`) : "";
+    timing === "asap"
+      ? "As soon as possible"
+      : scheduledDate && scheduledTime
+        ? formatOrderDateTime(londonWallTimeToUTC(scheduledDate, scheduledTime).toISOString())
+        : "";
 
   return (
     <div className="mx-auto grid max-w-5xl gap-10 px-4 py-8 sm:px-6 sm:py-12 lg:grid-cols-[1fr_360px] lg:px-8">

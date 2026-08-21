@@ -7,6 +7,7 @@ import {
   seedWeeklyHours,
 } from "@/lib/seed-data";
 import { computeOpeningStatus } from "@/lib/opening-hours";
+import { londonDateISO } from "@/lib/timezone";
 import type { BusinessSettings, DeliveryZone, SpecialHours, WeeklyHours } from "@/lib/types";
 import type {
   BusinessSettingsRow,
@@ -89,7 +90,7 @@ export async function getSpecialHours(): Promise<SpecialHours[]> {
     const { data, error } = await supabase
       .from("special_hours")
       .select("*")
-      .gte("date", new Date().toISOString().slice(0, 10));
+      .gte("date", londonDateISO());
     if (error) return seedSpecialHours;
     const rows = (data ?? []) as SpecialHoursRow[];
 

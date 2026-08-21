@@ -40,9 +40,11 @@ export async function POST(request: NextRequest) {
       const intent = event.data.object as Stripe.PaymentIntent;
       const orderId = intent.metadata?.orderId;
       if (orderId) {
-        await markOrderPaid(orderId);
-        const order = await getOrderById(orderId);
-        if (order) await sendOrderReceivedEmail(order);
+        const wasNewlyPaid = await markOrderPaid(orderId);
+        if (wasNewlyPaid) {
+          const order = await getOrderById(orderId);
+          if (order) await sendOrderReceivedEmail(order);
+        }
       }
       break;
     }

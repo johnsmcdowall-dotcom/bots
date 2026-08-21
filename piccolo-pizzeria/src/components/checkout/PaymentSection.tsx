@@ -66,7 +66,7 @@ function PayButton({ orderId, totalMinor, error, setError }: { orderId: string; 
   const [submitting, setSubmitting] = useState(false);
 
   async function handlePay() {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || submitting) return;
     setSubmitting(true);
     setError(null);
 
