@@ -1,7 +1,7 @@
 import "server-only";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { memoryOrders, memoryWebhookEvents } from "@/lib/data/memory-store";
+import { memoryIdempotencyKeys, memoryOrders, memoryWebhookEvents } from "@/lib/data/memory-store";
 import { awardLoyaltyPoints } from "@/lib/data/loyalty";
 import { sendOrderReadyEmail } from "@/lib/email";
 import { addDaysToISODate, londonHHMM, londonWallTimeToUTC } from "@/lib/timezone";
@@ -109,9 +109,27 @@ export interface CreatePendingOrderInput {
   discountMinor: number;
   totalMinor: number;
   promoCode?: string;
+  // Stable per-checkout-attempt id from the client (see checkoutRequestSchema).
+  // The single source of truth for "has this exact attempt already been
+  // handled" — see the isNew flag on the return value.
+  idempotencyKey: string;
 }
 
-export async function createPendingOrder(input: CreatePendingOrderInput): Promise<OrderRecord> {
+export interface CreatePendingOrderResult {
+  order: OrderRecord;
+  /**
+   * false means a request with this idempotencyKey already claimed (or is in
+   * the middle of claiming) an order — `order` is THAT order, not a new one.
+   * Callers must never re-run one-time side effects (marking paid, sending
+   * the "order received" email, creating a Stripe PaymentIntent) when this
+   * is false; those belong solely to the request that gets isNew: true.
+   */
+  isNew: boolean;
+}
+
+const PG_UNIQUE_VIOLATION = "23505";
+
+export async function createPendingOrder(input: CreatePendingOrderInput): Promise<CreatePendingOrderResult> {
   const order: OrderRecord = {
     id: crypto.randomUUID(),
     orderNumber: generateOrderNumber(),
@@ -134,8 +152,19 @@ export async function createPendingOrder(input: CreatePendingOrderInput): Promis
 
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
+    // Claim the key synchronously — no `await` between the check and the
+    // set — so two calls already in flight in this same process (a real
+    // `Promise.all([...])`, or two concurrent HTTP requests handled on the
+    // same event loop) can never both see the key as free. This is the
+    // in-memory-store equivalent of the database's partial unique index.
+    const existingId = memoryIdempotencyKeys.get(input.idempotencyKey);
+    if (existingId) {
+      const existing = memoryOrders.get(existingId);
+      if (existing) return { order: existing, isNew: false };
+    }
+    memoryIdempotencyKeys.set(input.idempotencyKey, order.id);
     memoryOrders.set(order.id, order);
-    return order;
+    return { order, isNew: true };
   }
 
   const { error: orderError } = await supabase.from("orders").insert({
@@ -159,8 +188,18 @@ export async function createPendingOrder(input: CreatePendingOrderInput): Promis
     total_minor: order.totalMinor,
     promo_code: order.promoCode ?? null,
     payment_status: order.paymentStatus,
+    idempotency_key: input.idempotencyKey,
   });
-  if (orderError) throw new Error(`Failed to create order: ${orderError.message}`);
+  if (orderError) {
+    if (orderError.code === PG_UNIQUE_VIOLATION) {
+      // Lost the race: a concurrent request with the same idempotency key
+      // won the database's unique index. That request's order is the real
+      // one — fetch and return it instead of erroring out.
+      const existing = await getOrderByIdempotencyKey(input.idempotencyKey);
+      if (existing) return { order: existing, isNew: false };
+    }
+    throw new Error(`Failed to create order: ${orderError.message}`);
+  }
 
   if (order.items.length > 0) {
     const { data: insertedItems, error: itemsError } = await supabase
@@ -202,7 +241,7 @@ export async function createPendingOrder(input: CreatePendingOrderInput): Promis
 
   await supabase.from("order_status_history").insert({ order_id: order.id, status: order.status, changed_by: "system" });
 
-  return order;
+  return { order, isNew: true };
 }
 
 export async function attachPaymentIntent(orderId: string, paymentIntentId: string): Promise<void> {
@@ -293,6 +332,23 @@ export async function getOrderByPaymentIntentId(paymentIntentId: string): Promis
     return null;
   }
   const { data } = await supabase.from("orders").select("id").eq("stripe_payment_intent_id", paymentIntentId).maybeSingle();
+  if (!data) return null;
+  return loadOrderFromSupabase(supabase, (data as { id: string }).id);
+}
+
+/**
+ * Looks up an order by its client-supplied checkout idempotency key. This is
+ * the cheap fast path for "this exact checkout attempt already happened" —
+ * checked before doing any pricing/slot validation at all, and also the
+ * fallback createPendingOrder uses when it loses a genuine insert race.
+ */
+export async function getOrderByIdempotencyKey(idempotencyKey: string): Promise<OrderRecord | null> {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) {
+    const orderId = memoryIdempotencyKeys.get(idempotencyKey);
+    return orderId ? (memoryOrders.get(orderId) ?? null) : null;
+  }
+  const { data } = await supabase.from("orders").select("id").eq("idempotency_key", idempotencyKey).maybeSingle();
   if (!data) return null;
   return loadOrderFromSupabase(supabase, (data as { id: string }).id);
 }

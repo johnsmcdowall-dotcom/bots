@@ -196,6 +196,7 @@ export interface OrderRow {
   payment_status: string;
   stripe_payment_intent_id: string | null;
   customer_id: string | null;
+  idempotency_key: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -33,6 +33,7 @@ export function CheckoutFlow() {
   const scheduledTime = useBasketStore((s) => s.scheduledTime);
   const promoCode = useBasketStore((s) => s.promoCode);
   const clear = useBasketStore((s) => s.clear);
+  const ensureCheckoutAttemptId = useBasketStore((s) => s.ensureCheckoutAttemptId);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,10 +67,16 @@ export function CheckoutFlow() {
     setSubmitting(true);
     setError(null);
     try {
+      // Generated once and persisted with the basket — a double-click, a
+      // dropped-response retry, or a refresh-and-resubmit here all reuse
+      // the SAME id, which is what lets the server recognise "this is the
+      // same checkout attempt" instead of creating a second order.
+      const idempotencyKey = ensureCheckoutAttemptId();
       const res = await fetch("/api/checkout/create-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          idempotencyKey,
           lines: lines.map((l) => ({
             productId: l.productId,
             quantity: l.quantity,

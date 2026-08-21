@@ -3,12 +3,11 @@ import { z } from "zod";
 import { checkoutRequestSchema } from "@/lib/validations/checkout";
 import { getBusinessSettings, getDeliveryZones, getOpeningStatus, getSpecialHours, getWeeklyHours } from "@/lib/data/business";
 import { getMenu, getPromoCodes } from "@/lib/data/menu";
-import { getBookedCounts, createPendingOrder, attachPaymentIntent, markOrderPaid } from "@/lib/data/orders";
+import { getBookedCounts, createPendingOrder, getOrderByIdempotencyKey } from "@/lib/data/orders";
 import { calculateOrder, PricingError } from "@/lib/pricing";
 import { generateSlots } from "@/lib/slots";
 import { getStripeClient } from "@/lib/stripe";
-import { isStripeConfigured } from "@/lib/config";
-import { sendOrderReceivedEmail } from "@/lib/email";
+import { resolveCheckoutPayment } from "@/lib/checkout";
 import { londonWallTimeToUTC } from "@/lib/timezone";
 
 export async function POST(request: NextRequest) {
@@ -24,6 +23,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
   }
   const input = parsed.data;
+
+  // Fast path: this exact checkout attempt (same client-generated
+  // idempotency key) has already been handled, or is being handled right
+  // now by another request. Skip straight to resolving a response from the
+  // order that already exists — never re-validate hours/slots or recompute
+  // pricing for a retry/duplicate, since that could legitimately produce a
+  // different number the second time around (a promo's usage limit hit in
+  // between, say) and Stripe would then reject a mismatched replay.
+  const existingByKey = await getOrderByIdempotencyKey(input.idempotencyKey);
+  if (existingByKey) {
+    return NextResponse.json(await resolveCheckoutPayment(existingByKey, false, getStripeClient()));
+  }
 
   const [business, weeklyHours, specialHours, openingStatus] = await Promise.all([
     getBusinessSettings(),
@@ -89,7 +100,12 @@ export async function POST(request: NextRequest) {
     throw err;
   }
 
-  const order = await createPendingOrder({
+  // createPendingOrder is the real concurrency-safety boundary: if a
+  // second request with this same idempotency key raced us here and won,
+  // isNew comes back false and `order` is THAT request's order, not a new
+  // one — see the migration/function comments for how the claim is atomic
+  // in both the database and in-memory branches.
+  const { order, isNew } = await createPendingOrder({
     method: input.method,
     timing: input.timing,
     requestedTime: requestedTime.toISOString(),
@@ -102,36 +118,8 @@ export async function POST(request: NextRequest) {
     discountMinor: priced.discountMinor,
     totalMinor: priced.totalMinor,
     promoCode: priced.promoCode,
+    idempotencyKey: input.idempotencyKey,
   });
 
-  if (!isStripeConfigured) {
-    // Demo mode: no Stripe keys configured, so we can't take a real payment.
-    // Mark the order paid immediately so the full flow can still be tested.
-    await markOrderPaid(order.id);
-    await sendOrderReceivedEmail({ ...order, status: "received", paymentStatus: "paid" });
-    return NextResponse.json({
-      demoMode: true,
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      totalMinor: priced.totalMinor,
-    });
-  }
-
-  const stripe = getStripeClient()!;
-  const intent = await stripe.paymentIntents.create({
-    amount: priced.totalMinor,
-    currency: "gbp",
-    automatic_payment_methods: { enabled: true },
-    metadata: { orderId: order.id, orderNumber: order.orderNumber },
-    receipt_email: input.customer.email,
-  });
-  await attachPaymentIntent(order.id, intent.id);
-
-  return NextResponse.json({
-    demoMode: false,
-    clientSecret: intent.client_secret,
-    orderId: order.id,
-    orderNumber: order.orderNumber,
-    totalMinor: priced.totalMinor,
-  });
+  return NextResponse.json(await resolveCheckoutPayment(order, isNew, getStripeClient()));
 }

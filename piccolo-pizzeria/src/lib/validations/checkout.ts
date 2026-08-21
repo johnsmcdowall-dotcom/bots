@@ -41,6 +41,11 @@ export const checkoutRequestSchema = z
     customer: customerSchema,
     address: addressSchema.optional(),
     notes: z.string().max(280).optional(),
+    // Stable per-checkout-attempt id, generated once client-side and
+    // persisted alongside the basket so it survives a page refresh. Lets
+    // the server recognise "this exact attempt already happened" instead of
+    // creating a new order every time this endpoint is hit.
+    idempotencyKey: z.string().uuid("Invalid checkout session"),
   })
   .superRefine((val, ctx) => {
     if (val.method === "delivery" && !val.address) {
