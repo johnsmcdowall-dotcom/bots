@@ -33,6 +33,18 @@ async function broadcastOrderStatus(supabase: NonNullable<ReturnType<typeof getS
   }
 }
 
+// A pending_payment order that's still within this window might be a real
+// customer mid-checkout (they've got a live PaymentIntent and could pay any
+// second) — it has to hold its slot. Past this window it's abandoned: the
+// customer closed the tab, their card failed and they gave up, or (see
+// createPendingOrder's caller) they double-submitted and this is the loser
+// of that race. Without this cutoff, abandoned checkouts accumulate forever
+// — nothing ever cancels them — and permanently eat real slot capacity that
+// no admin screen surfaces (the Orders board only lists paid orders), so a
+// popular slot could silently read "full" to every future customer despite
+// no one having actually ordered anything.
+const PENDING_ORDER_HOLD_MINUTES = 20;
+
 export async function getBookedCounts(dateISO: string, method: OrderMethod): Promise<Record<string, number>> {
   try {
     // The slot labels this gets compared against (lib/slots.ts) are London
@@ -42,12 +54,14 @@ export async function getBookedCounts(dateISO: string, method: OrderMethod): Pro
     // whenever BST is in effect.
     const dayStart = londonWallTimeToUTC(dateISO, "00:00").toISOString();
     const dayEnd = londonWallTimeToUTC(addDaysToISODate(dateISO, 1), "00:00").toISOString();
+    const pendingCutoff = new Date(Date.now() - PENDING_ORDER_HOLD_MINUTES * 60_000).toISOString();
 
     const supabase = await getSupabaseServerClient();
     if (!supabase) {
       const counts: Record<string, number> = {};
       for (const order of memoryOrders.values()) {
         if (order.method !== method || order.status === "cancelled") continue;
+        if (order.paymentStatus === "pending" && order.createdAt < pendingCutoff) continue;
         if (order.requestedTime < dayStart || order.requestedTime >= dayEnd) continue;
         const time = londonHHMM(new Date(order.requestedTime));
         counts[time] = (counts[time] ?? 0) + 1;
@@ -61,7 +75,8 @@ export async function getBookedCounts(dateISO: string, method: OrderMethod): Pro
       .eq("method", method)
       .neq("status", "cancelled")
       .gte("requested_time", dayStart)
-      .lt("requested_time", dayEnd);
+      .lt("requested_time", dayEnd)
+      .or(`payment_status.neq.pending,created_at.gte.${pendingCutoff}`);
     if (error || !data) return {};
 
     const counts: Record<string, number> = {};

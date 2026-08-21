@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { createPendingOrder, getOrderById, markOrderPaid, markOrderPaymentFailed, updateOrderStatus } from "./orders";
+import { createPendingOrder, getBookedCounts, getOrderById, markOrderPaid, markOrderPaymentFailed, updateOrderStatus } from "./orders";
+import { memoryOrders } from "./memory-store";
+import { londonDateISO, londonWallTimeToUTC } from "@/lib/timezone";
 
 // These tests exercise the in-memory fallback store (the same code path
 // used whenever Supabase isn't configured, e.g. local dev/demo mode) since
@@ -76,6 +78,49 @@ describe("payment status idempotency", () => {
     await markOrderPaymentFailed(order.id);
     const failed = await getOrderById(order.id);
     expect(failed?.paymentStatus).toBe("failed");
+  });
+});
+
+describe("getBookedCounts excludes abandoned pending orders (production audit fix)", () => {
+  it("stops counting a pending_payment order toward slot capacity once it's stale, but still counts a fresh one", async () => {
+    const dateISO = londonDateISO();
+    const time = "13:37";
+
+    const stale = await createPendingOrder({
+      method: "collection",
+      timing: "scheduled",
+      requestedTime: londonWallTimeToUTC(dateISO, time).toISOString(),
+      customer: { firstName: "Stale", lastName: "Order", phone: "07700900111", email: "stale@example.com" },
+      items: [{ productId: "p-margherita", name: "Margherita", unitPriceMinor: 1000, quantity: 1, lineTotalMinor: 1000, modifiers: [] }],
+      subtotalMinor: 1000,
+      deliveryFeeMinor: 0,
+      discountMinor: 0,
+      totalMinor: 1000,
+    });
+    // Backdate it past the abandonment window, as if the customer walked
+    // away mid-checkout half an hour ago and never came back.
+    const staleRecord = memoryOrders.get(stale.id)!;
+    staleRecord.createdAt = new Date(Date.now() - 30 * 60_000).toISOString();
+
+    const fresh = await createPendingOrder({
+      method: "collection",
+      timing: "scheduled",
+      requestedTime: londonWallTimeToUTC(dateISO, time).toISOString(),
+      customer: { firstName: "Fresh", lastName: "Order", phone: "07700900112", email: "fresh@example.com" },
+      items: [{ productId: "p-margherita", name: "Margherita", unitPriceMinor: 1000, quantity: 1, lineTotalMinor: 1000, modifiers: [] }],
+      subtotalMinor: 1000,
+      deliveryFeeMinor: 0,
+      discountMinor: 0,
+      totalMinor: 1000,
+    });
+
+    const counts = await getBookedCounts(dateISO, "collection");
+    // Only the fresh, still-might-be-paying-any-second order holds the
+    // slot; the abandoned one from half an hour ago must not.
+    expect(counts[time]).toBe(1);
+
+    memoryOrders.delete(stale.id);
+    memoryOrders.delete(fresh.id);
   });
 });
 
