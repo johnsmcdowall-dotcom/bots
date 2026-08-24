@@ -304,11 +304,69 @@ Betfair tick ladder, commission, slippage. Every Phase 5 strategy is
 re-evaluated under REALISTIC assumptions; only those still profitable
 under REALISTIC (ideally marginally so under PESSIMISTIC) proceed.
 
-## Phase 7 — Football Engine
+## Phase 7 — Football Engine — IN PROGRESS
 
 Model-value, post-goal repricing, xG divergence, red-card repricing,
 microstructure, external-consensus strategies — same grading/journal/
 walk-forward discipline as Phase 5.
+
+**OVER_1_5_GOALS_SCALP delivered** (`football/over_1_5_scalp/`) as the
+first concrete football strategy — an independent module added without
+modifying any existing file (horse racing's `strategies/`/`horse_racing/`
+are untouched). Trades the Over/Under 1.5 Goals market: a 0-0-at-30-minute
+BACK, staged 50/50 across a 30- and 50-minute entry, greened up
+(hedged) the moment a goal is confirmed, hard-exited around minute 70 if
+none arrives.
+
+Delivered:
+- `config.py` — `Over15ScalpConfig`, matching the requested config shape
+  exactly (`from_dict()` accepts the literal example dict), validated
+  (e.g. first+second entry fractions can't exceed the match allocation).
+- `scoring.py` — `prematch_goal_score`/`live_goal_pressure_score`:
+  configurable weighted 0-100 aggregates where every input is optional
+  and missing ones simply drop out of the average (never defaulted/
+  fabricated); `second_entry_edge`/`second_entry_fraction` implement the
+  spec's edge = model − market formula and strong/medium/weak sizing.
+- `hedge.py` — the green-up calculation, generalised from
+  `strategies/engine.py`'s single-entry BACK-then-LAY formula to N back
+  entries at different prices (handles the 30- and 50-minute entries
+  landing at different odds, and partial fills, via the same formula).
+  Derived from first principles and cross-checked in tests against
+  `strategies/engine.py`'s independently-derived single-entry case — both
+  agree exactly.
+- `state.py` — the spec's exact `TradeStatus` vocabulary
+  (`WATCHING`...`NO_TRADE`) and pure decision functions (qualification,
+  first/second entry, red-card gate, data-quality gate, goal/no-goal/
+  pressure-decay exits), every one returning an approved-or-rejected
+  reason string for logging, per the spec's explicit requirement.
+- `risk.py` — stake sizing wired to `risk/limits.py`. The bankroll rule
+  stated precisely and enforced by construction: bankroll is read exactly
+  once (`max_match_exposure`), every stake below that is a fraction of
+  the match's own ceiling, never of bankroll directly; a test locks in
+  that no sizing function can even accept a "previous loss" parameter
+  (no Martingale by construction, not convention).
+- `stats.py` — the `CompletedTrade` structured record the spec's learning
+  loop asks for, per-league stats (flagging negative expectancy only
+  above a minimum sample size) and goal time-band bucketing (30-35 ...
+  71+), to let the data show whether 30/50/70 are actually the right minutes.
+- `backtest.py` — Version A/B/C/D as genuinely different strategy logic
+  (not just config presets): A is blind manual timing, B adds the
+  pre-match filter, C adds live-stat confirmation, D adds EV-gated second
+  entry and pressure-decay exit. `run_backtest` compounds bankroll
+  chronologically (never shuffled); `walk_forward_split` provides the
+  train/test discipline the spec requires before any threshold can be
+  reported as validated.
+- `dashboard.py` — the data (not UI — `dashboard/` is still Phase 10)
+  behind the spec's "Over 1.5 Goal Trading" section: categorised match
+  rows (qualifiers/candidates/active trades), mark-to-market P&L and
+  target hedge for open positions, daily/all-time performance.
+
+**Caveat, same as every other phase**: exercised only against synthetic
+`MatchRecord`s in tests — there is no historical football+odds dataset
+imported, and no live football data provider connected
+(`data/football_feed.py` is still `NullFeed`). This is measurable
+machinery for the hypothesis the spec asked for, not a result. See the
+session's final report for the concrete pre-live checklist.
 
 ## Phase 8 — Portfolio System
 
