@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Sequence
 
+from betfair_trading.betfair.models import RunnerLadder
 from betfair_trading.betfair.ticks import ticks_between
 
 DEFAULT_WINDOW_SECONDS: tuple[float, ...] = (1.0, 3.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0)
@@ -38,6 +39,29 @@ class PricePoint:
     timestamp: datetime
     price: float
     traded_volume: float
+
+
+def price_proxy(runner: RunnerLadder) -> float | None:
+    """The representative price used to build a runner's PricePoint series:
+    prefer the actual last-traded price, fall back to mid-price, then to
+    best back, else `None` if the runner isn't priced at all yet.
+
+    Used identically by features/pipeline.py (building live rolling
+    features) and models/labels.py (building forward-looking training
+    labels from the same recorded data) — a single definition so both
+    always agree on what "the price" was at a given snapshot; if this
+    diverged between the two, a label could end up more optimistic/
+    pessimistic than what a live feature computation actually saw.
+    """
+    if runner.last_traded_price is not None:
+        return runner.last_traded_price
+    best_back = runner.best_back
+    best_lay = runner.best_lay
+    if best_back is not None and best_lay is not None:
+        return (best_back.price + best_lay.price) / 2.0
+    if best_back is not None:
+        return best_back.price
+    return None
 
 
 def _window_slice(points: Sequence[PricePoint], as_of: datetime, window_seconds: float) -> list[PricePoint]:

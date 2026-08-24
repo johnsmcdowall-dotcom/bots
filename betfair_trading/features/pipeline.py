@@ -29,6 +29,7 @@ from betfair_trading.features.rolling import (
     RollingFeatures,
     compute_rolling_features,
 )
+from betfair_trading.features.rolling import price_proxy as compute_price_proxy
 from betfair_trading.features.time_to_off import TimeToOffRegime, classify
 
 
@@ -86,6 +87,38 @@ def rows_to_dicts(rows: Sequence[FeatureRow]) -> list[dict[str, Any]]:
     return [row.to_flat_dict() for row in rows]
 
 
+def _iter_snapshots(store: SnapshotStore, market_id: str):
+    """Shared replay iteration for anything in this module or models/
+    (label construction) that needs a market's snapshots strictly in
+    timestamp order, via the no-look-ahead replay engine rather than an
+    ad-hoc storage query.
+    """
+    engine = ReplayEngine({"market": market_snapshot_stream(store, market_id)})
+    for event in engine:
+        yield event.payload
+
+
+def extract_price_points(store: SnapshotStore, market_id: str) -> dict[str, list[PricePoint]]:
+    """The per-selection PricePoint series for a whole recorded market —
+    the same series `build_feature_table` accumulates internally for its
+    rolling features, exposed so models/labels.py can build forward-
+    looking training labels from *exactly* the same price history a live
+    feature computation would have seen, via the shared `price_proxy`
+    definition (features/rolling.py) rather than a second, possibly
+    diverging, notion of "the price".
+    """
+    points_by_selection: dict[str, list[PricePoint]] = defaultdict(list)
+    for snapshot in _iter_snapshots(store, market_id):
+        for runner in snapshot.runners:
+            price = compute_price_proxy(runner)
+            if price is None:
+                continue
+            points_by_selection[runner.selection_id].append(
+                PricePoint(snapshot.timestamp, price, runner.total_matched)
+            )
+    return points_by_selection
+
+
 def build_feature_table(
     store: SnapshotStore,
     market_id: str,
@@ -100,14 +133,11 @@ def build_feature_table(
         )
     scheduled_start = race_reference["scheduled_start"]
 
-    engine = ReplayEngine({"market": market_snapshot_stream(store, market_id)})
-
     points_by_selection: dict[str, list[PricePoint]] = defaultdict(list)
     previous_race_book: RaceBook | None = None
     rows: list[FeatureRow] = []
 
-    for event in engine:
-        snapshot: MarketSnapshot = event.payload
+    for snapshot in _iter_snapshots(store, market_id):
         race_book = build_race_book(snapshot)
 
         shifts_by_id: dict[str, Any] = {}
@@ -118,12 +148,12 @@ def build_feature_table(
 
         for runner in snapshot.runners:
             micro = compute_microstructure(runner, snapshot)
-            price_proxy = runner.last_traded_price or micro.mid_price or micro.best_back
-            if price_proxy is None:
+            price = compute_price_proxy(runner)
+            if price is None:
                 continue  # nothing to build a price history point from — skip this runner this snapshot
 
             points = points_by_selection[runner.selection_id]
-            points.append(PricePoint(snapshot.timestamp, price_proxy, runner.total_matched))
+            points.append(PricePoint(snapshot.timestamp, price, runner.total_matched))
 
             rolling = {
                 window: compute_rolling_features(points, snapshot.timestamp, window) for window in windows

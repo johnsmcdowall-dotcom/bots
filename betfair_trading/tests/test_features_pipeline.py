@@ -11,7 +11,7 @@ from betfair_trading.betfair.models import (
 )
 from betfair_trading.core.interfaces import Sport
 from betfair_trading.database.storage import SnapshotStore
-from betfair_trading.features.pipeline import build_feature_table
+from betfair_trading.features.pipeline import build_feature_table, extract_price_points
 from betfair_trading.features.time_to_off import TimeToOffRegime
 
 MARKET_ID = "1.111"
@@ -140,6 +140,17 @@ def test_to_flat_dict_produces_prefixed_columns(tmp_path):
     assert "book_normalised_probability" in flat
     assert "roll_1s_price_velocity" in flat
     assert "roll_2m_volume_velocity" in flat
+    store.close()
+
+
+def test_extract_price_points_matches_rolling_state_used_by_pipeline(tmp_path):
+    store = _build_synthetic_market(tmp_path, n_snapshots=6)
+    points = extract_price_points(store, MARKET_ID)
+
+    assert set(points.keys()) == {"1", "2"}
+    assert len(points["1"]) == 6
+    assert [p.price for p in points["1"]] == [4.0, 3.95, 3.9, 3.8, 3.6, 3.5]
+    assert points["1"] == sorted(points["1"], key=lambda p: p.timestamp)
     store.close()
 
 

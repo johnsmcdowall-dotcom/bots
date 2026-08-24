@@ -13,6 +13,6 @@ happens in Phase 4, once baseline models exist to ablate against; this
 phase only builds and unit-tests the computation itself.
 """
 
-from betfair_trading.features.pipeline import FeatureRow, build_feature_table, rows_to_dicts
+from betfair_trading.features.pipeline import FeatureRow, build_feature_table, extract_price_points, rows_to_dicts
 
-__all__ = ["FeatureRow", "build_feature_table", "rows_to_dicts"]
+__all__ = ["FeatureRow", "build_feature_table", "extract_price_points", "rows_to_dicts"]

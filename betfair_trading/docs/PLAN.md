@@ -135,12 +135,81 @@ Flagged follow-up: capture Betfair's per-price traded-volume ladder
 VWAP can be exact rather than an approximation — small, isolated change,
 deferred rather than bundled into this phase's scope.
 
-## Phase 4 — Horse Baseline Models
+## Phase 4 — Horse Baseline Models — DONE (this change, machinery only — see caveat)
 
-Interpretable baselines first (logistic regression → tree/GBM) predicting
-1-tick/2-tick/5–30s direction as calibrated probabilities, never
-buy/sell labels. Calibration measured (Brier score, log loss, reliability
-plots) before any model is allowed to size a trade.
+Interpretable baselines first (logistic regression) predicting tick
+direction and target-before-stop outcomes as calibrated probabilities,
+never buy/sell labels. Calibration measured (Brier score, log loss,
+reliability tables) — a model that classifies well but is badly calibrated
+must not be allowed to size a trade.
+
+Delivered:
+- `models/labels.py` — forward-looking label construction, kept
+  structurally separate from `features/` (nothing in `features/` imports
+  `models/`) so a label can never leak backwards into a live feature:
+  - `short_horizon_label` (HORSE MODEL 2): the spec's 7-bucket signed tick
+    movement (`<=-3, -2, -1, 0, +1, +2, >=+3`) at a given horizon.
+  - `target_before_stop_label` (HORSE MODEL 1): walks forward from an
+    entry to determine TARGET / STOP / TIMEOUT, BACK/LAY-aware.
+    `CANONICAL_TARGET_STOP_CONFIGS` covers the spec's exact combinations
+    (+1/-1 … +5/-3) for both sides — one model per config, not one
+    hard-coded universal target/stop.
+  - `closing_price_label` (HORSE MODEL 8): explicitly documented as a
+    PROXY using the last recorded price, not real BSP — the platform
+    hasn't captured Betfair's settlement/cleared-orders data (that's a
+    separate, not-yet-built capture path), so this must not be read as a
+    genuine BSP forecast until that exists.
+- `models/calibration.py` — `brier_score`, `log_loss`,
+  `multiclass_brier_score`, `reliability_table` — pure, independently
+  tested against hand-computed values.
+- `models/dataset.py` — `build_labelled_rows` (feature+label assembly),
+  `chronological_market_split` (orders by `scheduled_start`, never
+  shuffled, market-level not row-level so two rows from the same race
+  can't land on opposite sides of a split), `to_model_matrix` (one-hot
+  encodes `time_to_off_regime`, drops identifier columns, and — this
+  surfaced two real bugs during testing — drops any row with a `None`
+  among the selected feature columns rather than imputing a fabricated
+  value).
+- `models/baseline.py` — `ShortHorizonDirectionModel` (multinomial
+  logistic regression, 7 classes), `TargetBeforeStopModel` (binary
+  logistic regression, trained only on resolved TARGET/STOP rows —
+  TIMEOUT is excluded per the spec's separate "neither occurs" estimate,
+  not folded in as a third class), `BSPForecastModel` (ridge regression on
+  the closing-price proxy, evaluated on mean absolute tick error, not
+  calibration, since it's a regression target not a probability).
+- `models/train.py` — `train_baseline_models()`: chronological split,
+  fits every baseline on TRAIN, evaluates on VALIDATION. Configs/horizons
+  with insufficient class diversity or data skip cleanly (`{"skipped":
+  ...}`) rather than fitting a degenerate model or raising.
+
+Two real bugs found by testing before they shipped: `to_model_matrix`
+originally only added a column to the schema if it was numeric in *some*
+scanned row, so a column that was `None` in every row of a small sample
+(e.g. an acceleration feature with too little history) silently vanished
+from the schema instead of correctly dropping those rows — fixed to
+always include the column and let the None-check drop the rows. And the
+first version of the end-to-end test used 5-second-spaced synthetic
+snapshots, which structurally can never populate a 1s/3s rolling window
+with enough points — not a code bug, but it demonstrated that
+`to_model_matrix`'s no-fabrication policy will correctly starve a model of
+every row if the recorded tick density doesn't support the requested
+window sizes. Real Betfair streaming data is sub-second; this is a data-
+density fact worth remembering once Phase 2's live recorder actually runs
+against real markets.
+
+**Caveat, stated plainly**: none of this has been run against real
+historical horse-racing data. Phase 2 only built live-recording
+infrastructure, and there are no live Betfair credentials in this
+environment to have actually recorded a market; no bulk historical import
+exists either. Every mechanic above (label correctness, chronological
+split, model fitting, calibration scoring) is proven correct against
+synthetic data in `tests/`. That is necessary but not sufficient — it
+proves the machinery works, not that any of these baselines have a real
+edge. Permutation-importance/ablation validation of which *features*
+actually earn their place (deferred from Phase 3) still needs real data to
+mean anything, and so does any claim about calibration or profitability.
+Do not read "182 tests passing" as "this finds a real edge" — it doesn't
+yet, because it hasn't been given real data to find one in.
 
 ## Phase 5 — Horse Strategies
 
