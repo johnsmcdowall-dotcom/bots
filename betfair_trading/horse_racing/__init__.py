@@ -1,6 +1,8 @@
-"""Horse-racing domain logic: race/runner reference data, time-to-off
-windowing, cross-runner book modelling.
+"""Horse-racing domain logic.
 
-Empty scaffold as of Phase 1. Built out from Phase 2 (historical replay
-import + reference data) per docs/PLAN.md.
+- market_discovery.py (Phase 2): WIN-market discovery/quality filtering.
+- recorder.py / validation.py (Phase 2): live market recording + integrity checks.
+- outcomes.py (Phase 5): extracts real settlement outcomes (WINNER/LOSER)
+  from recorded data, for research that needs ground truth rather than a
+  price-derived proxy.
 """

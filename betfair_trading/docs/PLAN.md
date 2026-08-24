@@ -211,13 +211,91 @@ mean anything, and so does any claim about calibration or profitability.
 Do not read "182 tests passing" as "this finds a real edge" — it doesn't
 yet, because it hasn't been given real data to find one in.
 
-## Phase 5 — Horse Strategies
+## Phase 5 — Horse Strategies — DONE (this change, machinery only — see caveat)
 
-Momentum, steamer, drifter, mean-reversion, cross-runner, favourite
-segmentation, favourite/longshot bias (re-measured on recent data, not
-assumed from old literature), BSP prediction, volume-shock, liquidity-
-withdrawal, scalping. Each strategy graded, journaled (incl. REJECTs),
-walk-forward validated independently before portfolio inclusion.
+Momentum, steamer, drifter, mean-reversion, favourite/longshot bias
+(re-measured on recent data, not assumed from old literature), BSP
+prediction, scalping. Every strategy grades its output A+/A/B/C/REJECT and
+produces a `Signal` for every opportunity it evaluates, including REJECTs,
+ready for `core.journal` (wiring that journaling into a live/paper run is
+Phase 10).
+
+Delivered:
+- `strategies/base.py` — `CommissionModel` (Betfair's real flat-rate-on-
+  profit structure), a documented PLACEHOLDER `estimate_fill_probability`
+  (not Phase 6's real queue/fill simulator), and `grade_signal` (the
+  A+/A/B/C/REJECT rubric — reject aggressively: non-positive net EV or
+  insufficient fill probability is always REJECT regardless of anything
+  else).
+- `strategies/engine.py` — the shared EV core. `resolved_profit_per_stake`
+  implements Betfair's "trade the ladder"/green-up formula, *derived here
+  from first principles* (setting win/lose exposure equal at entry vs.
+  exit) and checked against hand-worked numeric examples in tests, not
+  assumed from memory — both BACK-then-LAY and LAY-then-BACK divide by the
+  **exit** price, which is easy to get backwards.
+  `evaluate_target_before_stop_opportunity` wraps the fitted
+  `TargetBeforeStopModel` (Phase 4, HORSE MODEL 1) to price a trade;
+  `evaluate_priced_opportunity` is the lower-level core it's built on,
+  reused directly by `bsp_drift.py` since that strategy prices from a
+  regression forecast, not a classifier.
+- `strategies/momentum.py` — `SteamerStrategy`/`DrifterStrategy` (HORSE
+  STRATEGY 2/3): BACK/LAY momentum continuation, gated on tick velocity
+  **and** traded-volume confirmation and a tight spread — per the spec's
+  own distinction between "real persistent money" and "temporary noise".
+- `strategies/mean_reversion.py` — `MeanReversionStrategy` (HORSE MODEL
+  5): the mirror image of momentum — fades a rapid move that has NO
+  volume behind it (an overshoot, not informed money), explicitly
+  excluding volume-confirmed moves so the same row is never claimed by
+  both strategy families.
+- `strategies/scalping.py` — `ScalpingStrategy` (HORSE STRATEGY 11): tight
+  1-3 tick configs, gated on stricter spread/depth than momentum, with a
+  raised minimum fill-probability threshold to (partially, honestly)
+  compensate for the placeholder fill model not yet distinguishing a
+  one-sided fill from the round trip a scalp actually needs.
+- `strategies/bsp_drift.py` — `BspDriftStrategy` (HORSE STRATEGY 8):
+  prices a BACK-now/LAY-later or LAY-now/BACK-later trade from the fitted
+  `BSPForecastModel`'s predicted tick move, using a caller-supplied
+  confidence (there's no `predict_proba` to draw one from — a regression
+  point forecast needs an externally-supplied probability-of-being-right,
+  not an invented one).
+- `horse_racing/outcomes.py` + `strategies/favourite_longshot.py` — HORSE
+  STRATEGY 7/12, a RESEARCH REPORT, not a live strategy.
+  `extract_win_outcomes` reads real WINNER/LOSER `RunnerStatus` from a
+  market's final CLOSED snapshot (returns `None`, never a guess, if
+  settlement was never captured); `measure_favourite_longshot_calibration`
+  buckets by odds range and reports sample size, implied vs. actual win
+  frequency, and commission-adjusted BACK/LAY ROI — measuring, not
+  asserting, a bias.
+
+One real bug found and fixed by testing: `favourite_longshot.py`'s
+"last pre-off snapshot" picker initially matched on `in_play=False` alone,
+which a CLOSED (settled, ladder-emptied) snapshot also satisfies — it was
+picking the price-less settlement snapshot instead of the last snapshot
+while the market was still OPEN, silently producing zero observations.
+Fixed to also require `status is OPEN`.
+
+**Deliberately not built**: HORSE MODEL 9 (volume-shock/absorption) and
+HORSE MODEL 10 (liquidity-withdrawal) remain research-only, not live
+strategies — the spec itself is explicit that these need empirical
+validation before being trusted ("be extremely careful about assuming
+displayed orders are genuine intent... reject fragile strategies based
+purely on apparent spoofing"), and there is no real data yet to do that
+validation against. Building them as live signal generators now would be
+exactly the unvalidated-complexity mistake the spec warns against, not
+progress. Cross-runner confirmation (HORSE MODEL 7) is available as a
+`FeatureRow.probability_shift` field from Phase 3 but isn't yet wired into
+any entry filter here as an additional confirming signal — a reasonable
+Phase 6+ enhancement once there's real data to check whether it helps.
+
+**Caveat, unchanged from Phase 4, stated plainly again**: none of this has
+run against real historical or live data. Every strategy's entry filter,
+EV math, and grading is unit-tested against synthetic data proving the
+mechanics are correct; none of it has been shown to find a real edge, and
+won't have been until it runs against real markets. `strategies/base.py`'s
+fill-probability model and every strategy's commission/EV math are also
+still pending Phase 6's realistic execution simulator — until then, treat
+every net EV number this phase produces as "correct given these
+documented simplifications", not "correct".
 
 ## Phase 6 — Execution Simulator
 
