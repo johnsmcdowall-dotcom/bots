@@ -79,14 +79,61 @@ grows. Historical (pre-recorded) Betfair data import is a separate,
 still-open piece of this phase — needed before Phase 3+ can build features
 from more than what this session records live.
 
-## Phase 3 — Horse Research Features
+## Phase 3 — Horse Research Features — DONE (this change)
 
 `features/`: WOM, order-book imbalance, microprice, price velocity/
 acceleration, volume velocity/acceleration, rolling windows (1s–5min),
 cross-runner features (field-wide movement, book-% redistribution),
-time-to-off regime tagging. Validated feature-by-feature (permutation
-importance / ablation) before any model consumes them — per spec, remove
-useless complexity rather than accumulate it.
+time-to-off regime tagging.
+
+Delivered:
+- `features/microstructure.py` — instantaneous per-runner features from a
+  single snapshot: best_back/lay, mid_price, spread (ticks + %),
+  microprice (opposite-side-size-weighted), back/lay depth (raw and
+  distance-weighted), weight_of_money, order_book_imbalance, traded
+  volume, runner market share, implied probability. Every feature returns
+  `None` rather than a fabricated value when the ladder can't support it
+  (e.g. a runner with no lay side quoted).
+- `features/rolling.py` — the 1s/3s/5s/10s/30s/60s/2min/5min windows:
+  volume change/velocity/acceleration, VWAP, price velocity/acceleration,
+  tick velocity, recent high/low, distance from high/low in ticks. VWAP is
+  explicitly documented as an *approximation* (weighted by consecutive
+  snapshot deltas, not a true per-trade VWAP) — the platform doesn't yet
+  capture Betfair's traded-volume-by-price ladder (`EX_TRADED_VOL` at the
+  per-price level), only aggregate `total_matched`; flagged as a follow-up
+  below. Acceleration uses an index-based (not time-based) window split so
+  a 3-point window — the minimum it's ever called with — doesn't strand
+  itself into a 2/1 split with too few points on one side.
+- `features/cross_runner.py` — `RaceBook`/`RunnerBookPosition` (normalised
+  probability summing to 1 across priced runners, market rank,
+  favourite/second-favourite) and `probability_shifts()` between two
+  snapshots (field-relative delta — HORSE MODEL 7's "has this runner moved
+  too much or too little relative to the field").
+- `features/time_to_off.py` — `TimeToOffRegime`, the spec's 10 explicit
+  bands plus `MORE_THAN_60_MIN`/`POST_OFF`, with boundary semantics fixed
+  (exact boundary belongs to the shorter-countdown regime) so every race
+  buckets identically regardless of timestamp jitter.
+- `features/pipeline.py` — `build_feature_table()`: drives all of the
+  above off `backtesting.replay.ReplayEngine` (not an ad-hoc storage
+  query) to build one row per (runner, snapshot). Verified with a
+  black-box no-look-ahead test: the same market recorded to two stores
+  (one truncated partway through, one complete) produces byte-for-byte
+  identical `FeatureRow`s for every timestamp both stores share — proving
+  a row's rolling/cross-runner features can never be affected by
+  snapshots recorded after it. `FeatureRow.to_flat_dict()` flattens
+  everything into one prefixed dict per row for Phase 4 to consume as a
+  training dataframe.
+
+Deliberately not done here (belongs to Phase 4, once baseline models
+exist): permutation importance / ablation validation of which features
+actually add out-of-sample value. This phase built and unit-tested the
+computation; Phase 4 is what gets to decide which of it is useless
+complexity worth deleting.
+
+Flagged follow-up: capture Betfair's per-price traded-volume ladder
+(`EX_TRADED_VOL`) in `betfair/models.py`/`storage.py` so `rolling.py`'s
+VWAP can be exact rather than an approximation — small, isolated change,
+deferred rather than bundled into this phase's scope.
 
 ## Phase 4 — Horse Baseline Models
 
