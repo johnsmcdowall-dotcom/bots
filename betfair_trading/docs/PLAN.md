@@ -40,13 +40,44 @@ Deliverables:
   `portfolio/`, `dashboard/`, `alerts/` marking them as later-phase.
 - `tests/` — cover everything above that doesn't need live network.
 
-## Phase 2 — Horse Historical Replay
+## Phase 2 — Horse Market Recorder (live capture) — DONE (this change)
 
-Import Betfair historical horse-racing data (win markets, UK/IRE first).
-Normalise into the Phase 1 schema. Verify ladder/volume/timestamp/runner
-mapping/start-time integrity against known races before trusting any
-research built on top. Extend `horse_racing/` with race/runner reference
-data and time-to-off windowing.
+Smallest useful milestone toward good research data: **discover today's
+UK/IRE WIN markets that clear a liquidity/runner-count/time-to-off quality
+bar, register their race/runner reference data, record their full ladder
+via the streaming API, and validate what was recorded before trusting it.**
+
+Delivered:
+- `betfair/ticks.py` — Betfair's exact tick ladder (1.01–1000), used to
+  validate every recorded price is a real Betfair tick (and later by
+  execution/backtesting for all target/stop/slippage math).
+- `horse_racing/market_discovery.py` — `RaceMarket`/`RunnerCatalogueEntry`
+  dataclasses, `convert_market_catalogue` (betfairlightweight → ours),
+  `MarketQualityFilter` + `select_win_markets` (liquidity, runner count,
+  country, time-to-off window), `catalogue_filter` (Betfair Horse Racing
+  event type + WIN market type + country + start-time window).
+- `database/schema.py` / `storage.py` — `race_reference` /
+  `runner_reference` tables (market → venue/event/scheduled start, and
+  selection_id → horse name), so recorded ladder rows can be mapped back
+  to a horse. Kept generic/primitive in `storage.py` (no `horse_racing`
+  import) to preserve the sport-agnostic database layer.
+- `horse_racing/recorder.py` — `HorseRacingRecorder`: discover → register
+  reference data → record via `IngestionService`.
+- `horse_racing/validation.py` — `validate_recorded_market`: timestamp
+  monotonicity, ladder non-empty while OPEN, every recorded price is a
+  valid Betfair tick, every recorded selection_id is in the registered
+  runner reference.
+- `horse_racing/__main__.py` — live CLI entrypoint (untested against the
+  live API here — no credentials in this environment; every component it
+  wires together is unit-tested independently against fakes).
+
+Still open for a later pass through this phase, once live credentials
+exist: run the recorder against real markets, confirm captured timestamps
+line up with Betfair's own publish times under real network jitter, and
+decide the retention/compaction policy for `var/trading.duckdb` as volume
+grows. Historical (pre-recorded) Betfair data import is a separate,
+still-open piece of this phase — needed before Phase 3+ can build features
+from more than what this session records live.
 
 ## Phase 3 — Horse Research Features
 

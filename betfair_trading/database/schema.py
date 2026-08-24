@@ -14,6 +14,8 @@ from __future__ import annotations
 MARKET_SNAPSHOTS_TABLE = "market_snapshots"
 FOOTBALL_STATE_SNAPSHOTS_TABLE = "football_state_snapshots"
 MATCH_EVENTS_TABLE = "match_events"
+RACE_REFERENCE_TABLE = "race_reference"
+RUNNER_REFERENCE_TABLE = "runner_reference"
 
 SCHEMA_SQL = f"""
 CREATE TABLE IF NOT EXISTS {MARKET_SNAPSHOTS_TABLE} (
@@ -64,4 +66,30 @@ CREATE TABLE IF NOT EXISTS {MATCH_EVENTS_TABLE} (
 
 CREATE INDEX IF NOT EXISTS idx_match_events_match_ts
     ON {MATCH_EVENTS_TABLE} (match_id, timestamp);
+
+-- Horse-racing race/runner reference data, captured at market-discovery
+-- time (before/alongside recording starts) so recorded ladder rows can be
+-- mapped back to a horse name, venue and scheduled off time. Kept generic
+-- (no horse_racing/ import here — see database/storage.py) so this module
+-- stays sport-agnostic infrastructure; the domain meaning of these fields
+-- lives in horse_racing/market_discovery.py.
+CREATE TABLE IF NOT EXISTS {RACE_REFERENCE_TABLE} (
+    market_id           VARCHAR PRIMARY KEY,
+    event_id              VARCHAR,
+    event_name              VARCHAR,
+    market_name                VARCHAR,
+    venue                        VARCHAR,
+    country_code                   VARCHAR,
+    scheduled_start                  TIMESTAMPTZ NOT NULL,
+    runner_count                       INTEGER NOT NULL,
+    recorded_at                          TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS {RUNNER_REFERENCE_TABLE} (
+    market_id      VARCHAR NOT NULL,
+    selection_id     VARCHAR NOT NULL,
+    runner_name        VARCHAR NOT NULL,
+    sort_priority         INTEGER,
+    PRIMARY KEY (market_id, selection_id)
+);
 """

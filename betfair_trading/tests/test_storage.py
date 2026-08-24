@@ -79,3 +79,71 @@ def test_market_snapshot_count_for_unknown_market_is_zero(tmp_path):
     store = SnapshotStore(tmp_path / "trading.duckdb")
     assert store.market_snapshot_count("does-not-exist") == 0
     store.close()
+
+
+def test_write_and_read_race_reference(tmp_path):
+    store = SnapshotStore(tmp_path / "trading.duckdb")
+    scheduled_start = datetime(2026, 3, 1, 14, 35, 0, tzinfo=timezone.utc)
+
+    store.write_race_reference(
+        market_id="1.111",
+        event_id="30001",
+        event_name="York 1st Mar",
+        market_name="2m Hcap",
+        venue="York",
+        country_code="GB",
+        scheduled_start=scheduled_start,
+        runners=[("1", "Horse A", 1), ("2", "Horse B", 2), ("3", "Horse C", 3)],
+    )
+
+    race = store.read_race_reference("1.111")
+    assert race["venue"] == "York"
+    assert race["country_code"] == "GB"
+    assert race["runner_count"] == 3
+    assert race["scheduled_start"] == scheduled_start
+
+    runners = store.read_runner_reference("1.111")
+    assert [r["runner_name"] for r in runners] == ["Horse A", "Horse B", "Horse C"]
+    assert runners[0]["selection_id"] == "1"
+
+    store.close()
+
+
+def test_read_race_reference_missing_market_returns_none(tmp_path):
+    store = SnapshotStore(tmp_path / "trading.duckdb")
+    assert store.read_race_reference("nope") is None
+    assert store.read_runner_reference("nope") == []
+    store.close()
+
+
+def test_re_registering_race_replaces_runners(tmp_path):
+    store = SnapshotStore(tmp_path / "trading.duckdb")
+    scheduled_start = datetime(2026, 3, 1, 14, 35, 0, tzinfo=timezone.utc)
+
+    store.write_race_reference(
+        market_id="1.111",
+        event_id="30001",
+        event_name="York",
+        market_name="2m Hcap",
+        venue="York",
+        country_code="GB",
+        scheduled_start=scheduled_start,
+        runners=[("1", "Horse A", 1), ("2", "Horse B", 2)],
+    )
+    # A runner is scratched before off — re-registering must reflect that.
+    store.write_race_reference(
+        market_id="1.111",
+        event_id="30001",
+        event_name="York",
+        market_name="2m Hcap",
+        venue="York",
+        country_code="GB",
+        scheduled_start=scheduled_start,
+        runners=[("1", "Horse A", 1)],
+    )
+
+    runners = store.read_runner_reference("1.111")
+    assert len(runners) == 1
+    assert store.read_race_reference("1.111")["runner_count"] == 1
+
+    store.close()

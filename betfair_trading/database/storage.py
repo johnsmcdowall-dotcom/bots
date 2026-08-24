@@ -25,6 +25,8 @@ from betfair_trading.database.schema import (
     FOOTBALL_STATE_SNAPSHOTS_TABLE,
     MARKET_SNAPSHOTS_TABLE,
     MATCH_EVENTS_TABLE,
+    RACE_REFERENCE_TABLE,
+    RUNNER_REFERENCE_TABLE,
     SCHEMA_SQL,
 )
 
@@ -108,6 +110,62 @@ class SnapshotStore:
                 datetime.now(timezone.utc),
             ],
         )
+
+    def write_race_reference(
+        self,
+        market_id: str,
+        event_id: str | None,
+        event_name: str | None,
+        market_name: str | None,
+        venue: str | None,
+        country_code: str | None,
+        scheduled_start: datetime,
+        runners: list[tuple[str, str, int | None]],
+    ) -> None:
+        """Persist race + runner reference data (kept as primitives rather
+        than a horse_racing.RaceMarket parameter so this module has no
+        dependency on the horse_racing/ package — see database/schema.py).
+        `runners` is (selection_id, runner_name, sort_priority) tuples.
+        Idempotent: re-registering a market_id replaces its rows, since
+        runner lineups/scratchings can change between discovery calls.
+        """
+        self._conn.execute(
+            f"INSERT OR REPLACE INTO {RACE_REFERENCE_TABLE} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                market_id,
+                event_id,
+                event_name,
+                market_name,
+                venue,
+                country_code,
+                scheduled_start,
+                len(runners),
+                datetime.now(timezone.utc),
+            ],
+        )
+        self._conn.execute(f"DELETE FROM {RUNNER_REFERENCE_TABLE} WHERE market_id = ?", [market_id])
+        if runners:
+            self._conn.executemany(
+                f"INSERT INTO {RUNNER_REFERENCE_TABLE} VALUES (?, ?, ?, ?)",
+                [(market_id, selection_id, name, sort_priority) for selection_id, name, sort_priority in runners],
+            )
+
+    def read_race_reference(self, market_id: str) -> dict[str, Any] | None:
+        cursor = self._conn.execute(f"SELECT * FROM {RACE_REFERENCE_TABLE} WHERE market_id = ?", [market_id])
+        columns = [c[0] for c in cursor.description]
+        row = cursor.fetchone()
+        if row is None:
+            return None
+        return dict(zip(columns, row))
+
+    def read_runner_reference(self, market_id: str) -> list[dict[str, Any]]:
+        cursor = self._conn.execute(
+            f"SELECT selection_id, runner_name, sort_priority FROM {RUNNER_REFERENCE_TABLE} "
+            "WHERE market_id = ? ORDER BY sort_priority",
+            [market_id],
+        )
+        columns = [c[0] for c in cursor.description]
+        return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
     # -- reads --------------------------------------------------------------
 
