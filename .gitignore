@@ -215,3 +215,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Betfair trading platform: local DuckDB data + exported research Parquet
+betfair_trading/var/
+*.duckdb
+*.duckdb.wal
+

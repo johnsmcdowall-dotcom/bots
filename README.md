@@ -1,5 +1,13 @@
 # bots
 
+## Betfair trading platform
+
+A multi-sport (horse racing + football) Betfair Exchange trading system.
+Lives in [`betfair_trading/`](betfair_trading/) — see
+[`betfair_trading/README.md`](betfair_trading/README.md) for setup and
+[`betfair_trading/docs/`](betfair_trading/docs/) for the architecture and
+staged roadmap. Currently Phase 1 (infrastructure) only — no live trading.
+
 ## Piccolo Pizzeria
 
 A production-quality website and online ordering platform for Piccolo
